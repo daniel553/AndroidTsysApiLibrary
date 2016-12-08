@@ -14,10 +14,5 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        String json = "{ \"method\" : \"guru.test\", \"params\" : [ \"Guru\" ], \"id\" : 123 }";
-        NetUtil.post("https://gurujsonrpc.appspot.com/guru",json, NetUtil.CONTENT_TYPE_JSON);
-        assertTrue(true);
-    }
+
 }
