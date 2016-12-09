@@ -8,6 +8,7 @@ import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.model.Sale;
+import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 import com.ievolutioned.tsysapilibrary.util.LogUtil;
 
 import org.json.JSONException;
@@ -97,20 +98,20 @@ public class SaleService extends TransitServiceBase {
 
         private SaleResponse(JSONObject jsonObject) throws JSONException {
             super(jsonObject);
-            setAuthCode(jsonObject.getString(AUTH_CODE));
-            setHostReferenceNumber(jsonObject.getString(HOST_REFERENCE_NUMBER));
-            setTaskID(jsonObject.getString(TASK_ID));
-            setTransactionID(jsonObject.getString(TRANSACTION_ID));
-            setTransactionTimestamp(jsonObject.getString(TRANSACTION_TIMESTAMP));
-            setTransactionAmount(jsonObject.getString(TRANSACTION_AMOUNT));
-            setProcessedAmount(jsonObject.getString(PROCESSED_AMOUNT));
-            setTotalAmount(jsonObject.getString(TOTAL_AMOUNT));
-            setAddressVerificationCode(jsonObject.getString(ADDRESS_VERIFICATION_CODE));
-            setCardType(jsonObject.getString(CARD_TYPE));
-            setMaskedCardNumber(jsonObject.getString(MASKED_CARD_NUMBER));
-            setCommercialCard(jsonObject.getString(COMMERCIAL_CARD));
-            setCustomerReceipt(jsonObject.getString(CUSTOMER_RECEIPT));
-            setMerchantReceipt(jsonObject.getString(MERCHANT_RECEIPT));
+            setAuthCode(JsonUtil.getString(jsonObject, AUTH_CODE));
+            setHostReferenceNumber(JsonUtil.getString(jsonObject, HOST_REFERENCE_NUMBER));
+            setTaskID(JsonUtil.getString(jsonObject, TASK_ID));
+            setTransactionID(JsonUtil.getString(jsonObject, TRANSACTION_ID));
+            setTransactionTimestamp(JsonUtil.getString(jsonObject, TRANSACTION_TIMESTAMP));
+            setTransactionAmount(JsonUtil.getString(jsonObject, TRANSACTION_AMOUNT));
+            setProcessedAmount(JsonUtil.getString(jsonObject, PROCESSED_AMOUNT));
+            setTotalAmount(JsonUtil.getString(jsonObject, TOTAL_AMOUNT));
+            setAddressVerificationCode(JsonUtil.getString(jsonObject, ADDRESS_VERIFICATION_CODE));
+            setCardType(JsonUtil.getString(jsonObject, CARD_TYPE));
+            setMaskedCardNumber(JsonUtil.getString(jsonObject, MASKED_CARD_NUMBER));
+            setCommercialCard(JsonUtil.getString(jsonObject, COMMERCIAL_CARD));
+            setCustomerReceipt(JsonUtil.getString(jsonObject, CUSTOMER_RECEIPT));
+            setMerchantReceipt(JsonUtil.getString(jsonObject, MERCHANT_RECEIPT));
         }
 
         public String getAuthCode() {

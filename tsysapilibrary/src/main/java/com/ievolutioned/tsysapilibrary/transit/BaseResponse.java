@@ -1,5 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit;
 
+import com.ievolutioned.tsysapilibrary.util.JsonUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,9 +23,9 @@ public abstract class BaseResponse {
     private String responseMessage;
 
     public BaseResponse(JSONObject jsonObject) throws JSONException {
-        setStatus(jsonObject.getString(STATUS));
-        setResponseCode(jsonObject.getString(RESPONSE_CODE));
-        setResponseMessage(jsonObject.getString(RESPONSE_MESSAGE));
+        setStatus(JsonUtil.getString(jsonObject, STATUS));
+        setResponseCode(JsonUtil.getString(jsonObject, RESPONSE_CODE));
+        setResponseMessage(JsonUtil.getString(jsonObject, RESPONSE_MESSAGE));
     }
 
     public String getStatus() {

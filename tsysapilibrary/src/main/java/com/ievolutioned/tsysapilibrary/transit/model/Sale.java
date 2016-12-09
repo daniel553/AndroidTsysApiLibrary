@@ -1,6 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.model;
 
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
+import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,10 +48,10 @@ public class Sale extends TransitBase {
 
     public Sale(JSONObject jsonObject) throws Exception {
         super(jsonObject);
-        setCardDataSource(jsonObject.getString(CARD_DATA_SOURCE));
-        setTransactionAmount(jsonObject.getString(TRANSACTION_AMOUNT));
-        setCardNumber(jsonObject.getString(CARD_NUMBER));
-        setExpirationDate(jsonObject.getString(EXPIRATION_DATE));
+        setCardDataSource(JsonUtil.getString(jsonObject, CARD_DATA_SOURCE));
+        setTransactionAmount(JsonUtil.getString(jsonObject, TRANSACTION_AMOUNT));
+        setCardNumber(JsonUtil.getString(jsonObject, CARD_NUMBER));
+        setExpirationDate(JsonUtil.getString(jsonObject, EXPIRATION_DATE));
     }
 
     public String getCardDataSource() {

@@ -1,5 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit;
 
+import com.ievolutioned.tsysapilibrary.util.JsonUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,8 +18,8 @@ public abstract class TransitBase {
     protected JSONObject transitSerialized = new JSONObject();
 
     public TransitBase(JSONObject jsonObject) throws JSONException {
-        setDeviceId(jsonObject.getString(DEVICE_ID));
-        setTransactionKey(jsonObject.getString(TRANSACTION_KEY));
+        setDeviceId(JsonUtil.getString(jsonObject, DEVICE_ID));
+        setTransactionKey(JsonUtil.getString(jsonObject, TRANSACTION_KEY));
     }
 
     public TransitBase(String deviceId, String transactionKey) {
