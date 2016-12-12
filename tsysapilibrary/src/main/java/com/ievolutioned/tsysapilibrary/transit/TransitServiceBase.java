@@ -15,6 +15,7 @@ public abstract class TransitServiceBase {
             "https://stagegw.transnox.com/servlets/TransNox_API_Server/";  //PROD
 
     protected AsyncTask<Void, Void, BaseResponse> task;
+    protected abstract BaseResponse callService(TransitBase response);
 
     public void cancel() {
         if (task != null)
