@@ -1,6 +1,9 @@
 package com.ievolutioned.tsysapilibrary.transit;
 
+import android.support.annotation.NonNull;
+
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
+import com.ievolutioned.tsysapilibrary.util.LogUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,9 +47,19 @@ public abstract class TransitBase {
     }
 
     public JSONObject serialize() throws JSONException {
-        transitSerialized.put(DEVICE_ID, getDeviceId());
-        transitSerialized.put(TRANSACTION_KEY, getTransactionKey());
+        put(DEVICE_ID, getDeviceId());
+        put(TRANSACTION_KEY, getTransactionKey());
         return transitSerialized;
+    }
+
+
+    protected void put(@NonNull String name, Object value) {
+        if (transitSerialized != null && value != null)
+            try {
+                transitSerialized.put(name, value);
+            } catch (JSONException e) {
+                LogUtil.e("JSON put", e.getMessage(), e);
+            }
     }
 
 }

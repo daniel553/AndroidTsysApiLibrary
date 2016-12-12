@@ -89,10 +89,10 @@ public class Sale extends TransitBase {
     @Override
     public JSONObject serialize() throws JSONException {
         super.serialize();
-        transitSerialized.put(CARD_DATA_SOURCE, getCardDataSource());
-        transitSerialized.put(TRANSACTION_AMOUNT, getTransactionAmount());
-        transitSerialized.put(CARD_NUMBER, getCardNumber());
-        transitSerialized.put(EXPIRATION_DATE, getExpirationDate());
+        put(CARD_DATA_SOURCE, getCardDataSource());
+        put(TRANSACTION_AMOUNT, getTransactionAmount());
+        put(CARD_NUMBER, getCardNumber());
+        put(EXPIRATION_DATE, getExpirationDate());
         return transitSerialized;
     }
 
