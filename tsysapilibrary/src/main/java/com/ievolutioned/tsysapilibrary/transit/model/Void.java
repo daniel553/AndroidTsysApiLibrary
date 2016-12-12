@@ -59,8 +59,9 @@ public class Void extends TransitBase {
     @Override
     public JSONObject serialize() throws JSONException {
         super.serialize();
-        transitSerialized.put(TRANSACTION_ID, getTransactionID());
-        transitSerialized.put(EXTERNAL_REFERENCE_ID, getExternalReferenceID());
+        put(TRANSACTION_ID, getTransactionID());
+        put(TRANSACTION_ID, getTransactionID());
+        put(EXTERNAL_REFERENCE_ID, getExternalReferenceID());
         return transitSerialized;
     }
 }
