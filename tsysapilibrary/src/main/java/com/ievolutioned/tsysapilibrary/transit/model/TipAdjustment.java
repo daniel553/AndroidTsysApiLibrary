@@ -10,34 +10,35 @@ import org.json.JSONObject;
  * Void Transaction object. Contains the main definitions for a void.
  * <p>
  * Example JSON:
- * {"Void": {
- * "deviceID": "88300000228401",
- * "transactionKey": "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0",
- * "transactionID": "123213123123"
+ * {"TipAdjustment": {
+ * "deviceID": "000000000000",
+ * "transactionKey": "xxxxxxxxxxxxxxxxxxxxxxxxxx",
+ * "tip": "0.10",
+ * "transactionID": "111111111111111111"
  * }}
  * </p>
  * </p>
  * Created by Daniel on 08/12/2016.
  */
 
-public class Void extends TransitBase {
+public class TipAdjustment extends TransitBase {
 
+    public final String TIP = "tip";
     public final String TRANSACTION_ID = "transactionID";
-    public final String EXTERNAL_REFERENCE_ID = "externalReferenceID";
 
+    private String tip;
     private String transactionID;
-    private String externalReferenceID;
 
-    public Void(String deviceId, String transactionKey, String transactionID, String externalReferenceID) {
+    public TipAdjustment(String deviceId, String transactionKey, String tip, String transactionID) {
         super(deviceId, transactionKey);
+        this.tip = tip;
         this.transactionID = transactionID;
-        this.externalReferenceID = externalReferenceID;
     }
 
-    public Void(JSONObject jsonObject) throws JSONException {
+    public TipAdjustment(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
+        setTip(JsonUtil.getString(jsonObject, TIP));
         setTransactionID(JsonUtil.getString(jsonObject, TRANSACTION_ID));
-        setExternalReferenceID(JsonUtil.getString(jsonObject, EXTERNAL_REFERENCE_ID));
     }
 
     public String getTransactionID() {
@@ -48,19 +49,19 @@ public class Void extends TransitBase {
         this.transactionID = transactionID;
     }
 
-    public String getExternalReferenceID() {
-        return externalReferenceID;
+    public String getTip() {
+        return tip;
     }
 
-    public void setExternalReferenceID(String externalReferenceID) {
-        this.externalReferenceID = externalReferenceID;
+    public void setTip(String tip) {
+        this.tip = tip;
     }
 
     @Override
     public JSONObject serialize() throws JSONException {
         super.serialize();
+        put(TIP, getTip());
         put(TRANSACTION_ID, getTransactionID());
-        put(EXTERNAL_REFERENCE_ID, getExternalReferenceID());
         return transitSerialized;
     }
 }
