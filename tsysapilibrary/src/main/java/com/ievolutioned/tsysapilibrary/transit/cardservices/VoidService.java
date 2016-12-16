@@ -1,6 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
@@ -15,14 +16,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * {@link VoidService} service class. Allows to call the service of void
+ * and gets a response
+ * <p>
  * Created by Daniel on 07/12/2016.
+ * </p>
  */
-
 public class VoidService extends TransitServiceBase {
     private static final String TAG = VoidService.class.getName();
     public String URL = BASE_URL + "Void";
 
-    public VoidService(final Void voidObject, final TransitServiceCallback callback) {
+    /**
+     * {@link VoidService} service task builder.
+     * <p>
+     * It doesn't execute the code, use @see TransitBase#execute()
+     * </p>
+     *
+     * @param voidObject - {@link Void} object.
+     * @param callback   - {@link TransitServiceCallback} callback.
+     */
+    public VoidService(@NonNull final Void voidObject, @NonNull final TransitServiceCallback callback) {
         task = new AsyncTask<java.lang.Void, java.lang.Void, BaseResponse>() {
             @Override
             protected BaseResponse doInBackground(java.lang.Void... voids) {
@@ -62,6 +75,9 @@ public class VoidService extends TransitServiceBase {
     }
 
 
+    /**
+     * {@link VoidResponse} response class. Contains the specific attributes for void response from service
+     */
     public class VoidResponse extends BaseResponse {
 
         private final String ORDER_NUMBER = "orderNumber";
