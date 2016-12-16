@@ -1,7 +1,11 @@
 package com.ievolutioned.tsysapilibrary.transit;
 
 /**
+ * {@link CardDataSources} interface.
+ * Contains the main data sources allowed by the service.
+ * <p>
  * Created by Daniel on 16/12/2016.
+ * </p>
  */
 
 public interface CardDataSources {
