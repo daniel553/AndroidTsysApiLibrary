@@ -1,5 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.model;
 
+import android.support.annotation.NonNull;
+
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 
@@ -35,7 +37,19 @@ public class Auth extends TransitBase {
     private String expirationDate;
 
 
-    public Auth(String deviceId, String transactionKey, String cardDataSource, String transactionAmount, String cardNumber, String expirationDate) {
+    /**
+     * Auth constructor.
+     *
+     * @param deviceId          - unique identifier of device
+     * @param transactionKey    - unique transaction key
+     * @param cardDataSource    - {@link com.ievolutioned.tsysapilibrary.transit.CardDataSources} source
+     * @param transactionAmount - final transaction amount
+     * @param cardNumber        - card number
+     * @param expirationDate    - expiration date of card
+     */
+    public Auth(@NonNull String deviceId, @NonNull String transactionKey,
+                @NonNull String cardDataSource, @NonNull String transactionAmount,
+                @NonNull String cardNumber, @NonNull String expirationDate) {
         super(deviceId, transactionKey);
         this.cardDataSource = cardDataSource;
         this.transactionAmount = transactionAmount;
@@ -43,6 +57,12 @@ public class Auth extends TransitBase {
         this.expirationDate = expirationDate;
     }
 
+    /**
+     * Auth constructor
+     *
+     * @param jsonObject - {@link JSONObject} object, see example above
+     * @throws Exception
+     */
     public Auth(JSONObject jsonObject) throws Exception {
         super(jsonObject);
         setCardDataSource(JsonUtil.getString(jsonObject, CARD_DATA_SOURCE));

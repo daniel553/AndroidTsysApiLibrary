@@ -1,5 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.model;
 
+import android.support.annotation.NonNull;
+
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 
@@ -38,7 +40,19 @@ public class Sale extends TransitBase {
     private String expirationDate;
 
 
-    public Sale(String deviceId, String transactionKey, String cardDataSource, String transactionAmount, String cardNumber, String expirationDate) {
+    /**
+     * Sale constructor.
+     *
+     * @param deviceId          - unique identifier of device
+     * @param transactionKey    - unique transaction key
+     * @param cardDataSource    - {@link com.ievolutioned.tsysapilibrary.transit.CardDataSources} source
+     * @param transactionAmount - final transaction amount
+     * @param cardNumber        - card number
+     * @param expirationDate    - expiration date of card
+     */
+    public Sale(@NonNull String deviceId, @NonNull String transactionKey,
+                @NonNull String cardDataSource, @NonNull String transactionAmount,
+                @NonNull String cardNumber, @NonNull String expirationDate) {
         super(deviceId, transactionKey);
         this.cardDataSource = cardDataSource;
         this.transactionAmount = transactionAmount;
@@ -46,6 +60,12 @@ public class Sale extends TransitBase {
         this.expirationDate = expirationDate;
     }
 
+    /**
+     * Sale constructor
+     *
+     * @param jsonObject - {@link JSONObject} object, see example above
+     * @throws Exception
+     */
     public Sale(JSONObject jsonObject) throws Exception {
         super(jsonObject);
         setCardDataSource(JsonUtil.getString(jsonObject, CARD_DATA_SOURCE));
