@@ -3,6 +3,7 @@ package com.ievolutioned.androidtsysapilibrary;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.TipAdjustmentService;
@@ -28,13 +29,13 @@ public class TipAdjustmentInstrumentedTest {
 
 
     private SaleService.SaleResponse saleResponse = null;
-    String deviceId = "88300000228401";
-    String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private String deviceId = "88300000228401";
+    private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
 
     @Before
     public void setUp() throws Exception {
         saleResponse = null;
-        String cardDataSource = Sale.CardDataSources.MANUAL;
+        String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         String expirationDate = "0819";
