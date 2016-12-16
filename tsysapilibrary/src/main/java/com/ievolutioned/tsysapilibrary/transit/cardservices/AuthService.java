@@ -1,6 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
@@ -15,15 +16,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * {@link AuthService} service class. Allows to call the service of Auth and get a response
+ * <p>
  * Created by Daniel on 07/12/2016.
+ * </p>
  */
-
 public class AuthService extends TransitServiceBase {
     private String TAG = AuthService.class.getName();
 
     public String URL = BASE_URL + "Auth";
 
-    public AuthService(final Auth auth, final TransitServiceCallback callback) {
+    /**
+     * {@link AuthService} service task builder.
+     * <p>
+     * It doesn't execute the code, use @see TransitBase#execute()
+     * </p>
+     *
+     * @param auth     - {@link Auth} object.
+     * @param callback - {@link TransitServiceCallback} callback.
+     */
+    public AuthService(@NonNull final Auth auth, @NonNull final TransitServiceCallback callback) {
         task = new AsyncTask<Void, Void, BaseResponse>() {
             @Override
             protected BaseResponse doInBackground(Void... voids) {
@@ -63,6 +75,9 @@ public class AuthService extends TransitServiceBase {
     }
 
 
+    /**
+     * {@link AuthResponse} response class. Contains the specific attributes for auth response from service
+     */
     public class AuthResponse extends BaseResponse {
         private String TRANSACTION_AMOUNT = "transactionAmount";
         private String PROCESSED_AMOUNT = "processedAmount";
@@ -76,6 +91,12 @@ public class AuthService extends TransitServiceBase {
         private String addressVerificationCode;
         private String commercialCard;
 
+        /**
+         * {@link AuthResponse} constructor.
+         *
+         * @param jsonObject - {@link JSONObject} to be parsed
+         * @throws JSONException
+         */
         private AuthResponse(JSONObject jsonObject) throws JSONException {
             super(jsonObject);
             setTransactionAmount(JsonUtil.getString(jsonObject, TRANSACTION_AMOUNT));

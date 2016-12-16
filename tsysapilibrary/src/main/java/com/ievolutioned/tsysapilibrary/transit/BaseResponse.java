@@ -6,9 +6,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * {@link BaseResponse} response class. Contains the main attributes anc constructors for the
+ * TransIT services
+ * <p>
  * Created by Daniel on 08/12/2016.
+ * </p>
  */
-
 public abstract class BaseResponse {
 
     public static final String FAIL = "FAIL";
@@ -17,8 +20,6 @@ public abstract class BaseResponse {
     private String STATUS = "status";
     private String RESPONSE_CODE = "responseCode";
     private String RESPONSE_MESSAGE = "responseMessage";
-
-    //Sale, void
     private String AUTH_CODE = "authCode";
     private String HOST_REFERENCE_NUMBER = "hostReferenceNumber";
     private String TASK_ID = "taskID";
@@ -32,19 +33,26 @@ public abstract class BaseResponse {
     private String status;
     private String responseCode;
     private String responseMessage;
-
-    //Sale, void
-    private String authCode;//
-    private String hostReferenceNumber;//
-    private String taskID;//
-    private String transactionID;//
-    private String transactionTimestamp;//
-    private String cardType; //
-    private String maskedCardNumber; //
-    private String customerReceipt; //
-    private String merchantReceipt; //
+    private String authCode;
+    private String hostReferenceNumber;
+    private String taskID;
+    private String transactionID;
+    private String transactionTimestamp;
+    private String cardType;
+    private String maskedCardNumber;
+    private String customerReceipt;
+    private String merchantReceipt;
 
 
+    /**
+     * {@link BaseResponse} constructors. Builds a base object from {@link JSONObject} object.
+     * <p>
+     * For more information {@see https://stagetoolkit.transnox.com/site/sandbox/Sandbox}
+     * </p>
+     *
+     * @param jsonObject - {@link JSONObject} object of response
+     * @throws JSONException
+     */
     public BaseResponse(JSONObject jsonObject) throws JSONException {
         setStatus(JsonUtil.getString(jsonObject, STATUS));
         setResponseCode(JsonUtil.getString(jsonObject, RESPONSE_CODE));

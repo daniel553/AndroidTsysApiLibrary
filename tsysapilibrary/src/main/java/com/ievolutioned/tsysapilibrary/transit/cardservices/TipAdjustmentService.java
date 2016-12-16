@@ -1,6 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
@@ -15,7 +16,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * {@link TipAdjustmentService} service class. Allows to call the service of tip adjustment
+ * and gets a response
+ * <p>
  * Created by Daniel on 07/12/2016.
+ * </p>
  */
 
 public class TipAdjustmentService extends TransitServiceBase {
@@ -24,8 +29,17 @@ public class TipAdjustmentService extends TransitServiceBase {
 
     public String URL = BASE_URL + "TipAdjustment";
 
-    public TipAdjustmentService(final TipAdjustment tipAdjustment,
-                                final TransitServiceCallback callback) {
+    /**
+     * {@link TipAdjustmentService} service task builder.
+     * <p>
+     * It doesn't execute the code, use @see TransitBase#execute()
+     * </p>
+     *
+     * @param tipAdjustment - {@link TipAdjustment} object.
+     * @param callback      - {@link TransitServiceCallback} callback.
+     */
+    public TipAdjustmentService(@NonNull final TipAdjustment tipAdjustment,
+                                @NonNull final TransitServiceCallback callback) {
         task = new AsyncTask<Void, Void, BaseResponse>() {
             @Override
             protected BaseResponse doInBackground(Void... voids) {
@@ -67,6 +81,10 @@ public class TipAdjustmentService extends TransitServiceBase {
     }
 
 
+    /**
+     * {@link TipAdjustmentResponse} response class. Contains the specific attributes for tip
+     * adjustment response from service
+     */
     public class TipAdjustmentResponse extends BaseResponse {
         private String TOTAL_AMOUNT = "totalAmount";
         private String TIP = "tip";

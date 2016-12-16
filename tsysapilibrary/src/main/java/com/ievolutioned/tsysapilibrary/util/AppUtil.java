@@ -20,6 +20,8 @@ public class AppUtil {
 
     private static final String DEBUG_TSYS_DEVICE_ID = "88300000228401";
     private static final String DEBUG_TSYS_TRANSACTION_KEY = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    public static final String DEV_URL = "https://stagegw.transnox.com/servlets/TransNox_API_Server/";
+    public static final String PROD_URL = "https://stagegw.transnox.com/servlets/TransNox_API_Server/";
 
     public static String getTsysDeviceId(Context context) {
         if (isDebug)

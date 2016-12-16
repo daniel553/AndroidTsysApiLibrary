@@ -5,23 +5,49 @@ import android.os.AsyncTask;
 import com.ievolutioned.tsysapilibrary.util.AppUtil;
 
 /**
+ * {@link TransitServiceBase} abstract class. Allows to the services call, cancel and handle the
+ * response for TransIT services.
+ * <p>
  * Created by Daniel on 08/12/2016.
+ * </p>
  */
 
 public abstract class TransitServiceBase {
 
+    /**
+     * Url base for TransIT services.
+     */
     protected final String BASE_URL = AppUtil.isDebug ?
-            "https://stagegw.transnox.com/servlets/TransNox_API_Server/" : //Dev
-            "https://stagegw.transnox.com/servlets/TransNox_API_Server/";  //PROD
+            AppUtil.DEV_URL :  //Dev
+            AppUtil.PROD_URL;  //PROD
 
+    /**
+     * {@link AsyncTask} main task for a single call for a service.
+     */
     protected AsyncTask<Void, Void, BaseResponse> task;
+
+    /**
+     * Service caller.
+     *
+     * @param response - {@link TransitBase} response object.
+     * @return a {@link BaseResponse} response.
+     */
     protected abstract BaseResponse callService(TransitBase response);
 
-    public void cancel() {
+    /**
+     * Executes the main task
+     */
+    public void execute() {
         if (task != null)
-            task.cancel(true);
+            task.execute();
     }
 
+    /**
+     * Handles the response from a service call. Success and error handler.
+     *
+     * @param response - {@link BaseResponse} response object.
+     * @param callback - {@link TransitServiceCallback} callback.
+     */
     protected void handleResponse(BaseResponse response, TransitServiceCallback callback) {
         if (response == null || response.getStatus() == null)
             callback.onError("Error to call the service", null);
@@ -31,9 +57,12 @@ public abstract class TransitServiceBase {
             callback.onSuccess(response.getResponseMessage(), response);
     }
 
-    public void execute() {
+    /**
+     * Cancels the task if it is running.
+     */
+    public void cancel() {
         if (task != null)
-            task.execute();
+            task.cancel(true);
     }
 
 }

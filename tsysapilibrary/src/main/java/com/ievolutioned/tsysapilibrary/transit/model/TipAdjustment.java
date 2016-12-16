@@ -1,5 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.model;
 
+import android.support.annotation.NonNull;
+
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 
@@ -17,24 +19,38 @@ import org.json.JSONObject;
  * "transactionID": "111111111111111111"
  * }}
  * </p>
- * </p>
  * Created by Daniel on 08/12/2016.
  */
 
 public class TipAdjustment extends TransitBase {
 
-    public final String TIP = "tip";
-    public final String TRANSACTION_ID = "transactionID";
+    private final String TIP = "tip";
+    private final String TRANSACTION_ID = "transactionID";
 
     private String tip;
     private String transactionID;
 
-    public TipAdjustment(String deviceId, String transactionKey, String tip, String transactionID) {
+    /**
+     * {@link TipAdjustment} constructor.
+     *
+     * @param deviceId       - unique identifier of device
+     * @param transactionKey - unique transaction key
+     * @param tip            - tip amount
+     * @param transactionID  - transaction identifier
+     */
+    public TipAdjustment(@NonNull String deviceId, @NonNull String transactionKey,
+                         @NonNull String tip, @NonNull String transactionID) {
         super(deviceId, transactionKey);
         this.tip = tip;
         this.transactionID = transactionID;
     }
 
+    /**
+     * {@link TipAdjustment} constructor.
+     *
+     * @param jsonObject - {@link JSONObject} object, see example above.
+     * @throws JSONException
+     */
     public TipAdjustment(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         setTip(JsonUtil.getString(jsonObject, TIP));

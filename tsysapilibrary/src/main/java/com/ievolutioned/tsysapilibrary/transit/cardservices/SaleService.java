@@ -1,6 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
@@ -15,15 +16,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * {@link SaleService} service class. Allows to call the service of Sale and get a response
+ * <p>
  * Created by Daniel on 07/12/2016.
+ * </p>
  */
-
 public class SaleService extends TransitServiceBase {
     private String TAG = SaleService.class.getName();
 
     public String URL = BASE_URL + "Sale";
 
-    public SaleService(final Sale sale, final TransitServiceCallback callback) {
+    /**
+     * {@link SaleService} service task builder.
+     * <p>
+     * It doesn't execute the code, use @see TransitBase#execute()
+     * </p>
+     *
+     * @param sale     - {@link Sale} object.
+     * @param callback - {@link TransitServiceCallback} callback.
+     */
+    public SaleService(@NonNull final Sale sale, @NonNull final TransitServiceCallback callback) {
         task = new AsyncTask<Void, Void, BaseResponse>() {
             @Override
             protected BaseResponse doInBackground(Void... voids) {
@@ -63,6 +75,9 @@ public class SaleService extends TransitServiceBase {
     }
 
 
+    /**
+     * {@link SaleResponse} response class. Contains the specific attributes for sale response from service
+     */
     public class SaleResponse extends BaseResponse {
         private String TRANSACTION_AMOUNT = "transactionAmount";
         private String PROCESSED_AMOUNT = "processedAmount";

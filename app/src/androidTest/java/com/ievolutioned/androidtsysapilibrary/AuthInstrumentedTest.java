@@ -3,6 +3,7 @@ package com.ievolutioned.androidtsysapilibrary;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.AuthService;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
@@ -32,7 +33,7 @@ public class AuthInstrumentedTest {
     @Test
     public void authServiceCallPassTest() throws Exception {
         authResponse = null;
-        String cardDataSource = Auth.CardDataSources.MANUAL;
+        String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         String expirationDate = "0819";

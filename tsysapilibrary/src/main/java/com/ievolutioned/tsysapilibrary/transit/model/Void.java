@@ -1,5 +1,7 @@
 package com.ievolutioned.tsysapilibrary.transit.model;
 
+import android.support.annotation.NonNull;
+
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 
@@ -22,18 +24,33 @@ import org.json.JSONObject;
 
 public class Void extends TransitBase {
 
-    public final String TRANSACTION_ID = "transactionID";
-    public final String EXTERNAL_REFERENCE_ID = "externalReferenceID";
+    private final String TRANSACTION_ID = "transactionID";
+    private final String EXTERNAL_REFERENCE_ID = "externalReferenceID";
 
     private String transactionID;
     private String externalReferenceID;
 
-    public Void(String deviceId, String transactionKey, String transactionID, String externalReferenceID) {
+    /**
+     * {@link Void} constructor.
+     *
+     * @param deviceId            - unique identifier of device
+     * @param transactionKey      - unique transaction key
+     * @param transactionID       - transaction identifier
+     * @param externalReferenceID - external reference identifier
+     */
+    public Void(@NonNull String deviceId, @NonNull String transactionKey,
+                @NonNull String transactionID, @NonNull String externalReferenceID) {
         super(deviceId, transactionKey);
         this.transactionID = transactionID;
         this.externalReferenceID = externalReferenceID;
     }
 
+    /**
+     * {@link Void} constructor.
+     *
+     * @param jsonObject - {@link JSONObject} object, see the example above.
+     * @throws JSONException
+     */
     public Void(JSONObject jsonObject) throws JSONException {
         super(jsonObject);
         setTransactionID(JsonUtil.getString(jsonObject, TRANSACTION_ID));

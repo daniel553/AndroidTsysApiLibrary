@@ -3,6 +3,7 @@ package com.ievolutioned.androidtsysapilibrary;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
 import com.ievolutioned.tsysapilibrary.transit.model.Sale;
@@ -23,7 +24,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class SaleInstrumentedTest {
 
-
     private SaleService.SaleResponse saleResponse = null;
 
     @Test
@@ -31,7 +31,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         String deviceId = "88300000228401";
         String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
-        String cardDataSource = Sale.CardDataSources.MANUAL;
+        String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         String expirationDate = "0819";
@@ -68,7 +68,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         String deviceId = "88300000228401";
         String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
-        String cardDataSource = Sale.CardDataSources.MANUAL;
+        String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         //This is a error in expiration date.
