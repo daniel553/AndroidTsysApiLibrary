@@ -25,13 +25,13 @@ import static org.junit.Assert.assertTrue;
 public class SaleInstrumentedTest {
 
     private SaleService.SaleResponse saleResponse = null;
+    private String deviceId="88300000228401";
+    private String transactionKey="1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private String cardDataSource= CardDataSources.MANUAL;
 
     @Test
-    public void saleServiceCallPassTest() throws Exception {
+    public void testSaleServiceSuccess() throws Exception {
         saleResponse = null;
-        String deviceId = "88300000228401";
-        String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
-        String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         String expirationDate = "0819";
@@ -61,18 +61,16 @@ public class SaleInstrumentedTest {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.PASS));
+        assertTrue(saleResponse.getResponseCode().contentEquals("A0000"));
     }
 
     @Test
-    public void saleServiceCallFailTest() throws Exception {
+    public void testErrorExpirationDate() throws Exception {
         saleResponse = null;
-        String deviceId = "88300000228401";
-        String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
-        String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         //This is a error in expiration date.
-        String expirationDate = "0819x";
+        String expirationDate = "xxxx";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
@@ -100,8 +98,233 @@ public class SaleInstrumentedTest {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
 
     }
+
+    @Test
+    public void testExpirationDateNullFails() throws Exception{
+        saleResponse = null;
+        String transactionAmount = "0.10";
+        String cardNumber = "5415920054179210";
+        //This is an invalid expiration date.
+        String expirationDate = null;
+
+        Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new SaleService(sale, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                saleResponse = (SaleService.SaleResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                saleResponse = (SaleService.SaleResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+    }
+
+    @Test
+    public void testTransactionAmountEqualsZeroFails() throws Exception{
+        saleResponse = null;
+        //TransactionAmount equals 0.00
+        String transactionAmount = "0.00";
+        String cardNumber = "5415920054179210";
+        String expirationDate = "0819";
+
+        Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new SaleService(sale, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("D2999"));
+    }
+
+    @Test
+    public void testTransactionAmountNegativeFails() throws Exception{
+        saleResponse = null;
+        //TransactionAmount is negative
+        String transactionAmount = "-0.10";
+        String cardNumber = "5415920054179210";
+        String expirationDate = "0819";
+
+        Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new SaleService(sale, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+    }
+
+   @Test
+    public void testThatInvalidCardNumberFails() throws Exception{
+       saleResponse = null;
+       String transactionAmount = "0.10";
+       //Invalid cardNumber
+       String cardNumber = "5415920054179210xx";
+       String expirationDate = "0819";
+
+       Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+       final CountDownLatch countDownLatch = new CountDownLatch(1);
+       new SaleService(sale, new TransitServiceCallback() {
+           @Override
+           public void onSuccess(String msg, BaseResponse response) {
+               countDownLatch.countDown();
+               saleResponse = (SaleService.SaleResponse) response;
+           }
+
+           @Override
+           public void onError(String msg, BaseResponse response) {
+               countDownLatch.countDown();
+               saleResponse = (SaleService.SaleResponse) response;
+           }
+
+           @Override
+           public void onCancel() {
+               countDownLatch.countDown();
+           }
+       }).execute();
+
+       while (countDownLatch.getCount() > 0) {
+           countDownLatch.await(1, TimeUnit.SECONDS);
+       }
+       assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+       assertTrue(saleResponse.getResponseCode().contentEquals("E7260"));
+   }
+
+    @Test
+    public void testThatNullCardNumberFails() throws Exception{
+        saleResponse = null;
+        String transactionAmount = "0.10";
+        //Null cardNumber, empty cardNumber or filled with blanck spaces
+        String cardNumber = " ";
+        String expirationDate = "0819";
+
+        Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new SaleService(sale, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+    }
+
+    @Test
+    public void testThatNullTransactionAmountFails() throws Exception{
+        saleResponse = null;
+        //Null transactionAmount, empty or filled with black spaces
+        String transactionAmount = " ";
+        String cardNumber = "5415920054179210";
+        String expirationDate = "0819";
+
+        Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new SaleService(sale, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+    }
+
+
 
 
 }
