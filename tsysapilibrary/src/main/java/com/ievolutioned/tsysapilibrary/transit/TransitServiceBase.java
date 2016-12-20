@@ -20,6 +20,10 @@ public abstract class TransitServiceBase {
     protected final String BASE_URL = AppUtil.isDebug ?
             AppUtil.DEV_URL :  //Dev
             AppUtil.PROD_URL;  //PROD
+    /**
+     *  Array of Transit arguments for evaluation
+     */
+    protected String fields[];
 
     /**
      * {@link AsyncTask} main task for a single call for a service.
@@ -49,7 +53,9 @@ public abstract class TransitServiceBase {
      * @param callback - {@link TransitServiceCallback} callback.
      */
     protected void handleResponse(BaseResponse response, TransitServiceCallback callback) {
-        if (response == null || response.getStatus() == null)
+        if(response instanceof ErrorResponse){
+            callback.onError(((ErrorResponse) response).getMsg(),response);
+        }else if (response == null || response.getStatus() == null)
             callback.onError("Error to call the service", null);
         else if (response.getStatus().contentEquals(BaseResponse.FAIL))
             callback.onError(response.getResponseMessage(), response);

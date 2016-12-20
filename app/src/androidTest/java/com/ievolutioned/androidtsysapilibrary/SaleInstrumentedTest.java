@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 public class SaleInstrumentedTest {
 
     private SaleService.SaleResponse saleResponse = null;
+    private String message;
     private String deviceId="88300000228401";
     private String transactionKey="1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
     private String cardDataSource= CardDataSources.MANUAL;
@@ -69,7 +70,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
-        //This is a error in expiration date.
+        //This is a wrong in expiration date.
         String expirationDate = "xxxx";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -122,7 +123,7 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                saleResponse = (SaleService.SaleResponse) response;
+                message=msg;
                 countDownLatch.countDown();
             }
 
@@ -135,8 +136,8 @@ public class SaleInstrumentedTest {
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
-        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
-        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+        assertTrue(saleResponse==null);
+        assertTrue(message.contains("must not"));
     }
 
     @Test
@@ -255,7 +256,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         String transactionAmount = "0.10";
         //Null cardNumber, empty cardNumber or filled with blanck spaces
-        String cardNumber = " ";
+        String cardNumber = "";
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -264,14 +265,14 @@ public class SaleInstrumentedTest {
         new SaleService(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                countDownLatch.countDown();
                 saleResponse = (SaleService.SaleResponse) response;
+                countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
+                message=msg;
                 countDownLatch.countDown();
-                saleResponse = (SaleService.SaleResponse) response;
             }
 
             @Override
@@ -283,15 +284,15 @@ public class SaleInstrumentedTest {
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
-        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
-        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+        assertTrue(saleResponse==null);
+        assertTrue(message.contains("must not"));
     }
 
     @Test
     public void testThatNullTransactionAmountFails() throws Exception{
         saleResponse = null;
         //Null transactionAmount, empty or filled with black spaces
-        String transactionAmount = " ";
+        String transactionAmount = "    ";
         String cardNumber = "5415920054179210";
         String expirationDate = "0819";
 
@@ -301,14 +302,14 @@ public class SaleInstrumentedTest {
         new SaleService(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                countDownLatch.countDown();
                 saleResponse = (SaleService.SaleResponse) response;
+                countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
+                message=msg;
                 countDownLatch.countDown();
-                saleResponse = (SaleService.SaleResponse) response;
             }
 
             @Override
@@ -320,8 +321,8 @@ public class SaleInstrumentedTest {
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
-        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
-        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+        assertTrue(saleResponse==null);
+        assertTrue(message.contains("must not"));
     }
 
 

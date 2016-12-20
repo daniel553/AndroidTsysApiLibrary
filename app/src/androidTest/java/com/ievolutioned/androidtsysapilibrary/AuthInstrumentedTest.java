@@ -4,6 +4,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
+import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.AuthService;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
@@ -26,6 +27,7 @@ import static org.junit.Assert.assertTrue;
 public class AuthInstrumentedTest {
 
     private AuthService.AuthResponse authResponse = null;
+    private String message=null;
 
     private String deviceId = "88300000228401";
     private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
@@ -34,6 +36,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatAuthServicePasses () throws Exception {
         authResponse = null;
+        message=null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
@@ -70,6 +73,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatWrongExpirationDateFails() throws Exception {
         authResponse= null;
+        message=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         String cardNumber = "5415920054179210";
@@ -108,6 +112,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatWrongCardNumberFails() throws Exception{
         authResponse= null;
+        message=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         //Invalid cardNumber
@@ -146,10 +151,11 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatNullCardNumberFails() throws Exception{
         authResponse= null;
+        message=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
-        //Null cardNumber, empty cardNumber or with blanck spaces
-        String cardNumber = " ";
+        //Null cardNumber, empty cardNumber
+        String cardNumber = "";
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -157,13 +163,13 @@ public class AuthInstrumentedTest {
         new AuthService(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-
+                authResponse=(AuthService.AuthResponse) response;
                 countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                message=msg;
                 countDownLatch.countDown();
             }
 
@@ -176,30 +182,32 @@ public class AuthInstrumentedTest {
         while (countDownLatch.getCount()>0){
             countDownLatch.await(1,TimeUnit.SECONDS);
         }
-        assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
-        assertTrue(authResponse.getResponseCode().contentEquals("F9901"));
+        assertTrue(authResponse==null);
+        assertTrue(message.contains(" must not be empty or null"));
     }
+
     @Test
     public void testThatNullExpirationDateFails() throws Exception{
         authResponse= null;
+        message=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         String cardNumber = "5415920054179210";
-        //null expirationDate, empty expirationDate or with blanck spaces
-        String expirationDate = " ";
+        //null expirationDate, empty expirationDate
+        String expirationDate = "";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
         final CountDownLatch countDownLatch= new CountDownLatch(1);
         new AuthService(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-
+                authResponse=(AuthService.AuthResponse) response;
                 countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                message=msg;
                 countDownLatch.countDown();
             }
 
@@ -212,8 +220,9 @@ public class AuthInstrumentedTest {
         while (countDownLatch.getCount()>0){
             countDownLatch.await(1,TimeUnit.SECONDS);
         }
-        assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
-        assertTrue(authResponse.getResponseCode().contentEquals("F9901"));
+        assertTrue(authResponse==null);
+        assertTrue(message.contains("must not be empty or null"));
+
 
     }
 
@@ -335,6 +344,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatEmptyTransactionAmountFails() throws Exception {
         authResponse=null;
+        message=null;
         String cardDataSource=CardDataSources.MANUAL;
         //empty transactionAmount
         String transactionAmount="";
@@ -352,7 +362,7 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                message=msg;
                 countDownLatch.countDown();
             }
 
@@ -365,8 +375,8 @@ public class AuthInstrumentedTest {
         while (countDownLatch.getCount()>0){
             countDownLatch.await(1,TimeUnit.SECONDS);
         }
-        assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
-        assertTrue(authResponse.getResponseCode().contentEquals("F9901"));
+        assertTrue(authResponse==null);
+        assertTrue(message.contains("must not"));
     }
 
 

@@ -8,6 +8,8 @@ import com.ievolutioned.tsysapilibrary.util.LogUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+
 /**
  * {@link TransitBase} base class. Defines the device id and transaction key attributes
  * Serializes the main attributes of the object.
@@ -17,8 +19,8 @@ import org.json.JSONObject;
  * </p>
  */
 public abstract class TransitBase {
-    private String DEVICE_ID = "deviceID";
-    private String TRANSACTION_KEY = "transactionKey";
+    public static String DEVICE_ID = "deviceID";
+    public static String TRANSACTION_KEY = "transactionKey";
 
     private String deviceId;
     private String transactionKey;
@@ -74,6 +76,16 @@ public abstract class TransitBase {
             } catch (JSONException e) {
                 LogUtil.e("JSON put", e.getMessage(), e);
             }
+    }
+
+    public void validateEmptyNullFields(String[] fields) throws IllegalArgumentException {
+        for (String v: fields){
+            String data=JsonUtil.getString(this.transitSerialized,v);
+            if(data==null || data.isEmpty() || data.trim().isEmpty()) {
+                throw new IllegalArgumentException(v + " must not be empty or null");
+            }
+        }
+
     }
 
     public String getDeviceId() {

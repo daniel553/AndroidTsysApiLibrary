@@ -165,4 +165,6 @@ public abstract class BaseResponse {
     public void setMerchantReceipt(String merchantReceipt) {
         this.merchantReceipt = merchantReceipt;
     }
+
+
 }

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
@@ -56,19 +57,28 @@ public class AuthService extends TransitServiceBase {
     }
 
     @Override
-    protected BaseResponse callService(TransitBase baseResponse) {
-        Auth auth = (Auth) baseResponse;
-        if (auth == null || auth.getDeviceId() == null || auth.getDeviceId().isEmpty())
-            return null;
+    protected BaseResponse callService(TransitBase transit) {
+        Auth auth = (Auth) transit;
         try {
-            String response = NetUtil.post(URL, auth.serialize().toString(), NetUtil.CONTENT_TYPE_JSON);
+            JSONObject j=auth.serialize();
+            fields= new String[]{Auth.DEVICE_ID, Auth.TRANSACTION_KEY, Auth.CARD_NUMBER,Auth.CARD_DATA_SOURCE,Auth.EXPIRATION_DATE,Auth.TRANSACTION_AMOUNT};
+            auth.validateEmptyNullFields(fields);
+            String response = NetUtil.post(URL, j.toString(), NetUtil.CONTENT_TYPE_JSON);
             JSONObject json = new JSONObject(response);
             JSONObject authResponse = json.getJSONObject("AuthResponse");
             return new AuthResponse(authResponse);
         } catch (JSONException je) {
             LogUtil.e(TAG, je.getMessage(), je);
             return null;
-        } catch (Exception e) {
+        } catch (IllegalArgumentException ia) {
+            try {
+                return new ErrorResponse(ia.getMessage(), ia);
+            }catch (JSONException je){
+                LogUtil.e(TAG,je.getMessage(),je);
+                return null;
+            }
+        }
+        catch (Exception e) {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;
         }

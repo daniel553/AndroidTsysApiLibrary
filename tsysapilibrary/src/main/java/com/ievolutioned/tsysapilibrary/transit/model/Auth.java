@@ -26,10 +26,10 @@ import org.json.JSONObject;
 
 public class Auth extends TransitBase {
 
-    private String CARD_DATA_SOURCE = "cardDataSource";
-    private String TRANSACTION_AMOUNT = "transactionAmount";
-    private String CARD_NUMBER = "cardNumber";
-    private String EXPIRATION_DATE = "expirationDate";
+    public static String CARD_DATA_SOURCE = "cardDataSource";
+    public static String TRANSACTION_AMOUNT = "transactionAmount";
+    public static String CARD_NUMBER = "cardNumber";
+    public static String EXPIRATION_DATE = "expirationDate";
 
     private String cardDataSource;
     private String transactionAmount;

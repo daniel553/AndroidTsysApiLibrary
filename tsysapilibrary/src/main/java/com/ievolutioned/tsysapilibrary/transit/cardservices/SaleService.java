@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
@@ -58,16 +59,24 @@ public class SaleService extends TransitServiceBase {
     @Override
     protected BaseResponse callService(TransitBase baseResponse) {
         Sale sale = (Sale) baseResponse;
-        if (sale == null || sale.getDeviceId() == null || sale.getDeviceId().isEmpty())
-            return null;
         try {
-            String response = NetUtil.post(URL, sale.serialize().toString(), NetUtil.CONTENT_TYPE_JSON);
+            JSONObject j= sale.serialize();
+            fields= new String[]{Sale.TRANSACTION_KEY,Sale.DEVICE_ID,Sale.CARD_DATA_SOURCE,Sale.CARD_NUMBER,Sale.EXPIRATION_DATE,Sale.TRANSACTION_AMOUNT};
+            sale.validateEmptyNullFields(fields);
+            String response = NetUtil.post(URL, j.toString(), NetUtil.CONTENT_TYPE_JSON);
             JSONObject json = new JSONObject(response);
             JSONObject saleResponse = json.getJSONObject("SaleResponse");
             return new SaleResponse(saleResponse);
         } catch (JSONException je) {
             LogUtil.e(TAG, je.getMessage(), je);
             return null;
+        } catch (IllegalArgumentException ia){
+            try {
+                return new ErrorResponse(ia.getMessage(),ia);
+            } catch (JSONException e) {
+                LogUtil.e(TAG,e.getMessage());
+                return null;
+            }
         } catch (Exception e) {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;
