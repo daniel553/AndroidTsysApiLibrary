@@ -45,8 +45,8 @@ public class AuthInstrumentedTest {
         new AuthService(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                countDownLatch.countDown();
                 authResponse = (AuthService.AuthResponse) response;
+                countDownLatch.countDown();
             }
 
             @Override
@@ -148,8 +148,8 @@ public class AuthInstrumentedTest {
         authResponse= null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
-        //Null cardNumber
-        String cardNumber = null;
+        //Null cardNumber, empty cardNumber or with blanck spaces
+        String cardNumber = " ";
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -185,8 +185,8 @@ public class AuthInstrumentedTest {
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         String cardNumber = "5415920054179210";
-        //null expirationDate
-        String expirationDate = null;
+        //null expirationDate, empty expirationDate or with blanck spaces
+        String expirationDate = " ";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
         final CountDownLatch countDownLatch= new CountDownLatch(1);
@@ -330,6 +330,43 @@ public class AuthInstrumentedTest {
         }
         assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.PASS));
         assertTrue(authResponse.getTransactionAmount().equals(transactionAmount));
+    }
+
+    @Test
+    public void testThatEmptyTransactionAmountFails() throws Exception {
+        authResponse=null;
+        String cardDataSource=CardDataSources.MANUAL;
+        //empty transactionAmount
+        String transactionAmount="";
+        String cardNumber = "5415920054179210";
+        String expirationDate = "0819";
+
+        Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+        final CountDownLatch countDownLatch= new CountDownLatch(1);
+        new AuthService(auth, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                authResponse=(AuthService.AuthResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                authResponse=(AuthService.AuthResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount()>0){
+            countDownLatch.await(1,TimeUnit.SECONDS);
+        }
+        assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
+        assertTrue(authResponse.getResponseCode().contentEquals("F9901"));
     }
 
 

@@ -214,7 +214,7 @@ public class SaleInstrumentedTest {
     }
 
    @Test
-    public void testCardNumberInvalidFails() throws Exception{
+    public void testThatInvalidCardNumberFails() throws Exception{
        saleResponse = null;
        String transactionAmount = "0.10";
        //Invalid cardNumber
@@ -254,8 +254,8 @@ public class SaleInstrumentedTest {
     public void testThatNullCardNumberFails() throws Exception{
         saleResponse = null;
         String transactionAmount = "0.10";
-        //Null cardNumber
-        String cardNumber = null;
+        //Null cardNumber, empty cardNumber or filled with blanck spaces
+        String cardNumber = " ";
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -286,6 +286,45 @@ public class SaleInstrumentedTest {
         assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
         assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
     }
+
+    @Test
+    public void testThatNullTransactionAmountFails() throws Exception{
+        saleResponse = null;
+        //Null transactionAmount, empty or filled with black spaces
+        String transactionAmount = " ";
+        String cardNumber = "5415920054179210";
+        String expirationDate = "0819";
+
+        Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new SaleService(sale, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                countDownLatch.countDown();
+                saleResponse = (SaleService.SaleResponse) response;
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(saleResponse.getStatus().contentEquals(SaleService.SaleResponse.FAIL));
+        assertTrue(saleResponse.getResponseCode().contentEquals("F9901"));
+    }
+
+
 
 
 }
