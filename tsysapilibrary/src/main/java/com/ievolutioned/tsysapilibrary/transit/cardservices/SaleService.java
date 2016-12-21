@@ -2,9 +2,11 @@ package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v4.database.DatabaseUtilsCompat;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
@@ -60,9 +62,8 @@ public class SaleService extends TransitServiceBase {
     protected BaseResponse callService(TransitBase baseResponse) {
         Sale sale = (Sale) baseResponse;
         try {
-            JSONObject j= sale.serialize();
-            fields= new String[]{Sale.TRANSACTION_KEY,Sale.DEVICE_ID,Sale.CARD_DATA_SOURCE,Sale.CARD_NUMBER,Sale.EXPIRATION_DATE,Sale.TRANSACTION_AMOUNT};
-            sale.validateEmptyNullFields(fields);
+            JSONObject j = sale.serialize();
+            validate(sale);
             String response = NetUtil.post(URL, j.toString(), NetUtil.CONTENT_TYPE_JSON);
             JSONObject json = new JSONObject(response);
             JSONObject saleResponse = json.getJSONObject("SaleResponse");
@@ -70,16 +71,34 @@ public class SaleService extends TransitServiceBase {
         } catch (JSONException je) {
             LogUtil.e(TAG, je.getMessage(), je);
             return null;
-        } catch (IllegalArgumentException ia){
+        } catch (IllegalArgumentException ia) {
             try {
-                return new ErrorResponse(ia.getMessage(),ia);
+                return new ErrorResponse(ia.getMessage(), ia);
             } catch (JSONException e) {
-                LogUtil.e(TAG,e.getMessage());
+                LogUtil.e(TAG, e.getMessage());
                 return null;
             }
         } catch (Exception e) {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;
+        }
+    }
+
+    /**
+     * Validates that the required attributes for a service are not null, empty of blanck
+     * spcaced, if one of the above throws an IllegalArgumentException
+     * @param sale - {@link Sale} object that will be used for calling the TransIT service.
+     * @throws IllegalArgumentException
+     */
+    protected void validate(Sale sale) throws IllegalArgumentException {
+        fields = new String[]{Sale.TRANSACTION_KEY, Sale.DEVICE_ID, Sale.CARD_DATA_SOURCE};
+        sale.validateEmptyNullFields(fields);
+        if (sale.getCardDataSource() == CardDataSources.MANUAL) {
+            fields = new String[]{Sale.CARD_NUMBER, Sale.EXPIRATION_DATE, Sale.TRANSACTION_AMOUNT};
+            sale.validateEmptyNullFields(fields);
+        } else if (sale.getCardDataSource() == CardDataSources.SWIPE) {
+            fields = new String[]{/* add SWIPE requiered fields to validate */};
+            sale.validateEmptyNullFields(fields);
         }
     }
 

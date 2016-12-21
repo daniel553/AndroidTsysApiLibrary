@@ -7,6 +7,11 @@ import org.json.JSONObject;
  * Created by Marco on 20/12/2016.
  */
 
+/**
+ * {@link ErrorResponse} response class. Contains the main attributes and
+ * methods for the TransIT services in case of an error.
+ */
+
 public class ErrorResponse extends BaseResponse {
         private String msg;
         private Throwable exception;
@@ -24,6 +29,12 @@ public class ErrorResponse extends BaseResponse {
             super(jsonObject);
         }
 
+    /**
+     * {@link ErrorResponse} contructor. Builds an base object from {@link IllegalArgumentException}
+     * @param msg - String with the error message
+     * @param exception - The exception thrown
+     * @throws JSONException
+     */
         public ErrorResponse(String msg, Throwable exception) throws JSONException {
             super(new JSONObject());
             this.msg=msg;

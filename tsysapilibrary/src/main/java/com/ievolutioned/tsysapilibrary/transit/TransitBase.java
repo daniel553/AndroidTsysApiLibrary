@@ -78,10 +78,16 @@ public abstract class TransitBase {
             }
     }
 
+    /**
+     * Validates that the fields of the {@Link JSONObject} are not null, empty or filled with
+     * blanck spaces.
+     * @param fields - array of fields names to check.
+     * @throws IllegalArgumentException
+     */
     public void validateEmptyNullFields(String[] fields) throws IllegalArgumentException {
-        for (String v: fields){
-            String data=JsonUtil.getString(this.transitSerialized,v);
-            if(data==null || data.isEmpty() || data.trim().isEmpty()) {
+        for (String v : fields) {
+            String data = JsonUtil.getString(this.transitSerialized, v);
+            if (data == null || data.trim().isEmpty()) {
                 throw new IllegalArgumentException(v + " must not be empty or null");
             }
         }

@@ -4,6 +4,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
+import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.VoidService;
@@ -24,16 +25,19 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(AndroidJUnit4.class)
 public class VoidInstrumentedTest {
-
+    private CountDownLatch delay= new CountDownLatch(1);
     private final String deviceId = "88300000228401";
     private final String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
-
+    private ErrorResponse errorResponse= null;
     private SaleService.SaleResponse saleResponse = null;
     private VoidService.VoidResponse voidResponse = null;
 
     @Before
     public void setUp() throws Exception {
-
+        delay.await(6,TimeUnit.SECONDS);
+        while (delay.getCount()>0){
+            delay.countDown();
+        }
         saleResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
@@ -52,6 +56,10 @@ public class VoidInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
+                if(response instanceof VoidService.VoidResponse)
+                    voidResponse= (VoidService.VoidResponse) response;
+                else if(response instanceof ErrorResponse)
+                    errorResponse =(ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -64,12 +72,11 @@ public class VoidInstrumentedTest {
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
+
     }
 
     @Test
     public void voidServiceCallPassTest() throws Exception {
-        if (saleResponse == null)
-            throw new RuntimeException("No Sale Response!!!");
 
         voidResponse = null;
         final String transactionID = saleResponse.getTransactionID();
@@ -99,6 +106,81 @@ public class VoidInstrumentedTest {
             countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(voidResponse.getStatus().contentEquals(BaseResponse.PASS));
+    }
+
+    @Test
+    public void testThatNullTransactionIdFails() throws Exception{
+
+        voidResponse = null;
+        final String transactionID = saleResponse.getTransactionID();
+        //Sending null parameter on the transactionID
+        Void voidObject = new Void(deviceId, transactionKey, null, null);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new VoidService(voidObject, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                voidResponse = (VoidService.VoidResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                if(response instanceof VoidService.VoidResponse)
+                    voidResponse= (VoidService.VoidResponse) response;
+                else if(response instanceof ErrorResponse)
+                    errorResponse =(ErrorResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(errorResponse.getMsg().contains("must not"));
+        assertTrue(voidResponse==null);
+    }
+
+    @Test
+    public void testThatInvalidTransactionIdFails() throws Exception{
+
+        voidResponse = null;
+        final String transactionID = saleResponse.getTransactionID()+"xx";
+        //Sending null parameter on the transactionID
+        Void voidObject = new Void(deviceId, transactionKey, transactionID, null);
+
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        new VoidService(voidObject, new TransitServiceCallback() {
+            @Override
+            public void onSuccess(String msg, BaseResponse response) {
+                voidResponse = (VoidService.VoidResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onError(String msg, BaseResponse response) {
+                if(response instanceof VoidService.VoidResponse)
+                    voidResponse= (VoidService.VoidResponse) response;
+                else if(response instanceof ErrorResponse)
+                    errorResponse =(ErrorResponse) response;
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void onCancel() {
+                countDownLatch.countDown();
+            }
+        }).execute();
+
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
+        }
+        assertTrue(voidResponse.getStatus().contentEquals(VoidService.VoidResponse.FAIL));
     }
 
 }

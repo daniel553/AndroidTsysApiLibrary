@@ -6,7 +6,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * {@link BaseResponse} response class. Contains the main attributes anc constructors for the
+ * {@link BaseResponse} response class. Contains the main attributes and constructors for the
  * TransIT services
  * <p>
  * Created by Daniel on 08/12/2016.

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
@@ -60,9 +61,8 @@ public class AuthService extends TransitServiceBase {
     protected BaseResponse callService(TransitBase transit) {
         Auth auth = (Auth) transit;
         try {
-            JSONObject j=auth.serialize();
-            fields= new String[]{Auth.DEVICE_ID, Auth.TRANSACTION_KEY, Auth.CARD_NUMBER,Auth.CARD_DATA_SOURCE,Auth.EXPIRATION_DATE,Auth.TRANSACTION_AMOUNT};
-            auth.validateEmptyNullFields(fields);
+            JSONObject j = auth.serialize();
+            validate(auth);
             String response = NetUtil.post(URL, j.toString(), NetUtil.CONTENT_TYPE_JSON);
             JSONObject json = new JSONObject(response);
             JSONObject authResponse = json.getJSONObject("AuthResponse");
@@ -73,14 +73,32 @@ public class AuthService extends TransitServiceBase {
         } catch (IllegalArgumentException ia) {
             try {
                 return new ErrorResponse(ia.getMessage(), ia);
-            }catch (JSONException je){
-                LogUtil.e(TAG,je.getMessage(),je);
+            } catch (JSONException je) {
+                LogUtil.e(TAG, je.getMessage(), je);
                 return null;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;
+        }
+    }
+
+    /**
+     * Validates that the required attributes for a service are not null, empty of blanck
+     * spcaced, if one of the above throws an IllegalArgumentException
+     * @param auth - {@link Auth} object that will be used to call for the TransIT service.
+     * @throws IllegalArgumentException
+     */
+    private void validate(Auth auth) throws IllegalArgumentException{
+        fields= new String[] {Auth.DEVICE_ID,Auth.TRANSACTION_KEY,Auth.CARD_DATA_SOURCE};
+        auth.validateEmptyNullFields(fields);
+        if(auth.getCardDataSource()== CardDataSources.MANUAL) {
+            fields = new String[]{Auth.DEVICE_ID, Auth.TRANSACTION_KEY, Auth.CARD_NUMBER,
+                    Auth.CARD_DATA_SOURCE, Auth.EXPIRATION_DATE, Auth.TRANSACTION_AMOUNT};
+            auth.validateEmptyNullFields(fields);
+        }else if(auth.getCardDataSource()==CardDataSources.SWIPE){
+            fields= new String[] {/*Add required fields for SWIPE*/};
+            auth.validateEmptyNullFields(fields);
         }
     }
 

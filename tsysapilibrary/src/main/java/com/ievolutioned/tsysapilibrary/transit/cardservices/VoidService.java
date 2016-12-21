@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
@@ -58,16 +59,26 @@ public class VoidService extends TransitServiceBase {
     @Override
     protected BaseResponse callService(TransitBase baseResponse) {
         Void voidObject = (Void) baseResponse;
-        if (voidObject == null || voidObject.getDeviceId() == null || voidObject.getDeviceId().isEmpty())
-            return null;
         try {
-            String response = NetUtil.post(URL, voidObject.serialize().toString(), NetUtil.CONTENT_TYPE_JSON);
+            JSONObject j = voidObject.serialize();
+            fields = new String[]{Void.TRANSACTION_KEY, Void.DEVICE_ID,
+                    Void.TRANSACTION_ID};
+            voidObject.validateEmptyNullFields(fields);
+            String response = NetUtil.post(URL, voidObject.serialize().toString(),
+                    NetUtil.CONTENT_TYPE_JSON);
             JSONObject json = new JSONObject(response);
             JSONObject voidResponse = json.getJSONObject("VoidResponse");
             return new VoidResponse(voidResponse);
         } catch (JSONException je) {
             LogUtil.e(TAG, je.getMessage(), je);
             return null;
+        } catch (IllegalArgumentException ia) {
+            try {
+                return new ErrorResponse(ia.getMessage(), ia);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
         } catch (Exception e) {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;

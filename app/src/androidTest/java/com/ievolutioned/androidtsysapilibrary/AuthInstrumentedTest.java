@@ -10,6 +10,7 @@ import com.ievolutioned.tsysapilibrary.transit.cardservices.AuthService;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
 import com.ievolutioned.tsysapilibrary.transit.model.Auth;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,16 +28,23 @@ import static org.junit.Assert.assertTrue;
 public class AuthInstrumentedTest {
 
     private AuthService.AuthResponse authResponse = null;
-    private String message=null;
+    private ErrorResponse errorResponse=null;
+    private CountDownLatch delay= new CountDownLatch(1);
 
     private String deviceId = "88300000228401";
     private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
 
-
+    @Before
+    public void setUp() throws Exception{
+        delay.await(6,TimeUnit.SECONDS);
+        while (delay.getCount()>0){
+            delay.countDown();
+        }
+    }
     @Test
     public void testThatAuthServicePasses () throws Exception {
         authResponse = null;
-        message=null;
+        errorResponse=null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
@@ -54,6 +62,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -73,7 +85,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatWrongExpirationDateFails() throws Exception {
         authResponse= null;
-        message=null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         String cardNumber = "5415920054179210";
@@ -91,7 +103,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -112,7 +127,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatWrongCardNumberFails() throws Exception{
         authResponse= null;
-        message=null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         //Invalid cardNumber
@@ -130,7 +145,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -151,7 +169,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatNullCardNumberFails() throws Exception{
         authResponse= null;
-        message=null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         //Null cardNumber, empty cardNumber
@@ -169,7 +187,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                message=msg;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -183,13 +204,13 @@ public class AuthInstrumentedTest {
             countDownLatch.await(1,TimeUnit.SECONDS);
         }
         assertTrue(authResponse==null);
-        assertTrue(message.contains(" must not be empty or null"));
+        assertTrue(errorResponse.getMsg().contains(" must not be empty or null"));
     }
 
     @Test
     public void testThatNullExpirationDateFails() throws Exception{
         authResponse= null;
-        message=null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         String transactionAmount="0.10";
         String cardNumber = "5415920054179210";
@@ -207,7 +228,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                message=msg;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -221,15 +245,14 @@ public class AuthInstrumentedTest {
             countDownLatch.await(1,TimeUnit.SECONDS);
         }
         assertTrue(authResponse==null);
-        assertTrue(message.contains("must not be empty or null"));
-
-
+        assertTrue(errorResponse.getMsg().contains("must not be empty or null"));
     }
 
 
     @Test
     public void testThatTransactionAmountIsZero() throws Exception{
         authResponse= null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         //transactionAmount equals to 0.00
         String transactionAmount="0.00";
@@ -247,7 +270,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -268,6 +294,7 @@ public class AuthInstrumentedTest {
     @Test
     public void testTransactionAmountNegativeFails() throws Exception{
         authResponse= null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         //invalid transactionAmount
         String transactionAmount="-0.10";
@@ -285,7 +312,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -305,8 +335,8 @@ public class AuthInstrumentedTest {
 
     @Test
     public void testThatTransactionAmountIsTheSameInResponse() throws Exception{
-
         authResponse= null;
+        errorResponse=null;
         String cardDataSource= CardDataSources.MANUAL;
         //invalid transactionAmount
         String transactionAmount="0.10";
@@ -324,7 +354,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -343,8 +376,9 @@ public class AuthInstrumentedTest {
 
     @Test
     public void testThatEmptyTransactionAmountFails() throws Exception {
+
         authResponse=null;
-        message=null;
+        errorResponse=null;
         String cardDataSource=CardDataSources.MANUAL;
         //empty transactionAmount
         String transactionAmount="";
@@ -362,7 +396,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                message=msg;
+                if(response instanceof AuthService.AuthResponse)
+                    authResponse=(AuthService.AuthResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse=(ErrorResponse)response;
                 countDownLatch.countDown();
             }
 
@@ -376,7 +413,7 @@ public class AuthInstrumentedTest {
             countDownLatch.await(1,TimeUnit.SECONDS);
         }
         assertTrue(authResponse==null);
-        assertTrue(message.contains("must not"));
+        assertTrue(errorResponse.getMsg().contains("must not"));
     }
 
 

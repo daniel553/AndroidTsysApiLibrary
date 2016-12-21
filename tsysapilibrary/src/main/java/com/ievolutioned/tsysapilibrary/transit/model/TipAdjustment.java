@@ -24,8 +24,8 @@ import org.json.JSONObject;
 
 public class TipAdjustment extends TransitBase {
 
-    private final String TIP = "tip";
-    private final String TRANSACTION_ID = "transactionID";
+    public static String TIP = "tip";
+    public static String TRANSACTION_ID = "transactionID";
 
     private String tip;
     private String transactionID;
