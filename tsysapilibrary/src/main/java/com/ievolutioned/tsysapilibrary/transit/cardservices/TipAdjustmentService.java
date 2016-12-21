@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
+import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
@@ -62,11 +63,12 @@ public class TipAdjustmentService extends TransitServiceBase {
     @Override
     protected BaseResponse callService(TransitBase baseResponse) {
         TipAdjustment tipAdjustment = (TipAdjustment) baseResponse;
-        if (tipAdjustment == null || tipAdjustment.getDeviceId() == null
-                || tipAdjustment.getDeviceId().isEmpty())
-            return null;
         try {
-            String response = NetUtil.post(URL, tipAdjustment.serialize().toString(),
+            JSONObject j = tipAdjustment.serialize();
+            fields = new String[]{TipAdjustment.DEVICE_ID, TipAdjustment.TRANSACTION_KEY,
+                    TipAdjustment.TIP, TipAdjustment.TRANSACTION_ID};
+            tipAdjustment.validateEmptyNullFields(fields);
+            String response = NetUtil.post(URL, j.toString(),
                     NetUtil.CONTENT_TYPE_JSON);
             JSONObject json = new JSONObject(response);
             JSONObject tipResponse = json.getJSONObject("TipAdjustmentResponse");
@@ -74,6 +76,13 @@ public class TipAdjustmentService extends TransitServiceBase {
         } catch (JSONException je) {
             LogUtil.e(TAG, je.getMessage(), je);
             return null;
+        } catch (IllegalArgumentException ia) {
+            try {
+                return new ErrorResponse(ia.getMessage(), ia);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return null;
+            }
         } catch (Exception e) {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;

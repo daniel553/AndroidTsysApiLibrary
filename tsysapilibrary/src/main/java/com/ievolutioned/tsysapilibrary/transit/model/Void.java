@@ -24,8 +24,8 @@ import org.json.JSONObject;
 
 public class Void extends TransitBase {
 
-    private final String TRANSACTION_ID = "transactionID";
-    private final String EXTERNAL_REFERENCE_ID = "externalReferenceID";
+    public static final String TRANSACTION_ID = "transactionID";
+    public static final String EXTERNAL_REFERENCE_ID = "externalReferenceID";
 
     private String transactionID;
     private String externalReferenceID;
