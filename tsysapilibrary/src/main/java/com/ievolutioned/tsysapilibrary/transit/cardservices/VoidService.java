@@ -1,14 +1,12 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
-import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.model.Void;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 import com.ievolutioned.tsysapilibrary.util.LogUtil;
@@ -26,18 +24,36 @@ import org.json.JSONObject;
 public class VoidService extends TransitServiceBase {
     private static final String TAG = VoidService.class.getName();
     public String URL = BASE_URL + "Void";
+    private Void voidObject = null;
 
     /**
-     * {@link VoidService} service task builder.
-     * <p>
-     * It doesn't execute the code, use @see TransitBase#execute()
-     * </p>
+     * {@link VoidService} instance
      *
-     * @param voidObject - {@link Void} object.
-     * @param callback   - {@link TransitServiceCallback} callback.
+     * @return an instance
      */
-    public VoidService(@NonNull final Void voidObject, @NonNull final TransitServiceCallback callback) {
+    public static VoidService getInstance() {
+        synchronized (VoidService.class) {
+            if (instance == null || !(instance instanceof VoidService))
+                instance = new VoidService();
+            return (VoidService) instance;
+        }
+    }
+
+    private VoidService() {
+    }
+
+    @Override
+    protected void buildTask() {
         task = new AsyncTask<java.lang.Void, java.lang.Void, BaseResponse>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (callback == null)
+                    throw new NullPointerException("callback must not be null");
+                if (voidObject == null)
+                    throw new NullPointerException("void object must not be null");
+            }
+
             @Override
             protected BaseResponse doInBackground(java.lang.Void... voids) {
                 if (!isCancelled())
@@ -85,6 +101,9 @@ public class VoidService extends TransitServiceBase {
         }
     }
 
+    public void setVoidObject(Void voidObject) {
+        this.voidObject = voidObject;
+    }
 
     /**
      * {@link VoidResponse} response class. Contains the specific attributes for void response from service

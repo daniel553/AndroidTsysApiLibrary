@@ -2,6 +2,7 @@ package com.ievolutioned.androidtsysapilibrary;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.ievolutioned.tsysapilibrary.TsysApiLibrary;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
@@ -28,30 +29,30 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class TipAdjustmentInstrumentedTest {
 
-    private CountDownLatch delay= new CountDownLatch(1);
+    private CountDownLatch delay = new CountDownLatch(1);
     private SaleService.SaleResponse saleResponse = null;
-    private ErrorResponse errorResponse=null;
-    private String deviceId = "88300000228401";
-    private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private ErrorResponse errorResponse = null;
+    private String deviceId = Util.DEVICE_ID;
+    private String transactionKey = Util.TRANSACTION_KEY;
     private String message;
 
     @Before
     public void setUp() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
-        while (delay.getCount()>0){
+        delay.await(6, TimeUnit.SECONDS);
+        while (delay.getCount() > 0) {
             delay.countDown();
         }
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -60,10 +61,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -71,7 +72,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -86,7 +87,7 @@ public class TipAdjustmentInstrumentedTest {
         String tipamount = "0.10";
         TipAdjustment tip = new TipAdjustment(deviceId, transactionKey, tipamount,
                 saleResponse.getTransactionID());
-        new TipAdjustmentService(tip, new TransitServiceCallback() {
+        TsysApiLibrary.doTipAdjustment(tip, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 tipAdjustmentResponse = response;
@@ -95,10 +96,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -106,7 +107,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -120,7 +121,7 @@ public class TipAdjustmentInstrumentedTest {
         String tipamount = "";
         TipAdjustment tip = new TipAdjustment(deviceId, transactionKey, tipamount,
                 saleResponse.getTransactionID());
-        new TipAdjustmentService(tip, new TransitServiceCallback() {
+        TsysApiLibrary.doTipAdjustment(tip, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 tipAdjustmentResponse = response;
@@ -129,10 +130,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -140,7 +141,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -155,7 +156,7 @@ public class TipAdjustmentInstrumentedTest {
         String tipamount = "0.00";
         TipAdjustment tip = new TipAdjustment(deviceId, transactionKey, tipamount,
                 saleResponse.getTransactionID());
-        new TipAdjustmentService(tip, new TransitServiceCallback() {
+        TsysApiLibrary.doTipAdjustment(tip, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 tipAdjustmentResponse = response;
@@ -164,10 +165,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -175,7 +176,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -191,7 +192,7 @@ public class TipAdjustmentInstrumentedTest {
         String tipamount = "-0.10";
         TipAdjustment tip = new TipAdjustment(deviceId, transactionKey, tipamount,
                 saleResponse.getTransactionID());
-        new TipAdjustmentService(tip, new TransitServiceCallback() {
+        TsysApiLibrary.doTipAdjustment(tip, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 tipAdjustmentResponse = response;
@@ -200,10 +201,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -211,7 +212,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -225,7 +226,7 @@ public class TipAdjustmentInstrumentedTest {
         String tipamount = "0.10";
         TipAdjustment tip = new TipAdjustment(deviceId, transactionKey, tipamount,
                 null);
-        new TipAdjustmentService(tip, new TransitServiceCallback() {
+        TsysApiLibrary.doTipAdjustment(tip, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 tipAdjustmentResponse = response;
@@ -234,10 +235,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -245,7 +246,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -261,7 +262,7 @@ public class TipAdjustmentInstrumentedTest {
         String transactionID = saleResponse.getTransactionID() + "xx";
         TipAdjustment tip = new TipAdjustment(deviceId, transactionKey, tipamount,
                 transactionID);
-        new TipAdjustmentService(tip, new TransitServiceCallback() {
+        TsysApiLibrary.doTipAdjustment(tip, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 tipAdjustmentResponse = response;
@@ -270,10 +271,10 @@ public class TipAdjustmentInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof TipAdjustmentService.TipAdjustmentResponse)
-                    tipAdjustmentResponse=response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof TipAdjustmentService.TipAdjustmentResponse)
+                    tipAdjustmentResponse = response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -281,7 +282,7 @@ public class TipAdjustmentInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);

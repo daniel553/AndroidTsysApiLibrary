@@ -1,7 +1,6 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
@@ -9,7 +8,6 @@ import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
-import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.model.Auth;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 import com.ievolutioned.tsysapilibrary.util.LogUtil;
@@ -24,25 +22,44 @@ import org.json.JSONObject;
  * </p>
  */
 public class AuthService extends TransitServiceBase {
+    private Auth auth = null;
     private String TAG = AuthService.class.getName();
 
     public String URL = BASE_URL + "Auth";
 
     /**
-     * {@link AuthService} service task builder.
-     * <p>
-     * It doesn't execute the code, use @see TransitBase#execute()
-     * </p>
+     * Gets {@link AuthService} instance
      *
-     * @param auth     - {@link Auth} object.
-     * @param callback - {@link TransitServiceCallback} callback.
+     * @return an instance
      */
-    public AuthService(@NonNull final Auth auth, @NonNull final TransitServiceCallback callback) {
+    public static AuthService getInstance() {
+        synchronized (AuthService.class) {
+            if (instance == null || !(instance instanceof AuthService))
+                instance = new AuthService();
+            return (AuthService) instance;
+        }
+    }
+
+    private AuthService() {
+    }
+
+    @Override
+    protected void buildTask() {
         task = new AsyncTask<Void, Void, BaseResponse>() {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (callback == null)
+                    throw new NullPointerException("callback must not be null");
+                if (auth == null)
+                    throw new NullPointerException("auth must not be null");
+            }
+
             @Override
             protected BaseResponse doInBackground(Void... voids) {
                 if (!isCancelled())
-                    return callService(auth);
+                    return callService(AuthService.this.auth);
                 return null;
             }
 
@@ -56,6 +73,7 @@ public class AuthService extends TransitServiceBase {
             }
         };
     }
+
 
     @Override
     protected BaseResponse callService(TransitBase transit) {
@@ -86,20 +104,29 @@ public class AuthService extends TransitServiceBase {
     /**
      * Validates that the required attributes for a service are not null, empty of blanck
      * spcaced, if one of the above throws an IllegalArgumentException
+     *
      * @param auth - {@link Auth} object that will be used to call for the TransIT service.
      * @throws IllegalArgumentException
      */
-    private void validate(Auth auth) throws IllegalArgumentException{
-        fields= new String[] {Auth.DEVICE_ID,Auth.TRANSACTION_KEY,Auth.CARD_DATA_SOURCE};
+    private void validate(Auth auth) throws IllegalArgumentException {
+        fields = new String[]{Auth.DEVICE_ID, Auth.TRANSACTION_KEY, Auth.CARD_DATA_SOURCE};
         auth.validateEmptyNullFields(fields);
-        if(auth.getCardDataSource()== CardDataSources.MANUAL) {
+        if (auth.getCardDataSource() == CardDataSources.MANUAL) {
             fields = new String[]{Auth.DEVICE_ID, Auth.TRANSACTION_KEY, Auth.CARD_NUMBER,
                     Auth.CARD_DATA_SOURCE, Auth.EXPIRATION_DATE, Auth.TRANSACTION_AMOUNT};
             auth.validateEmptyNullFields(fields);
-        }else if(auth.getCardDataSource()==CardDataSources.SWIPE){
-            fields= new String[] {/*Add required fields for SWIPE*/};
+        } else if (auth.getCardDataSource() == CardDataSources.SWIPE) {
+            fields = new String[]{/*Add required fields for SWIPE*/};
             auth.validateEmptyNullFields(fields);
         }
+    }
+
+    public Auth getAuth() {
+        return auth;
+    }
+
+    public void setAuth(Auth auth) {
+        this.auth = auth;
     }
 
 

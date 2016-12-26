@@ -2,12 +2,12 @@ package com.ievolutioned.androidtsysapilibrary;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.ievolutioned.tsysapilibrary.TsysApiLibrary;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.cardservices.AuthService;
-import com.ievolutioned.tsysapilibrary.transit.cardservices.SaleService;
 import com.ievolutioned.tsysapilibrary.transit.model.Auth;
 
 import org.junit.Before;
@@ -28,32 +28,33 @@ import static org.junit.Assert.assertTrue;
 public class AuthInstrumentedTest {
 
     private AuthService.AuthResponse authResponse = null;
-    private ErrorResponse errorResponse=null;
-    private CountDownLatch delay= new CountDownLatch(1);
+    private ErrorResponse errorResponse = null;
+    private CountDownLatch delay = new CountDownLatch(1);
 
-    private String deviceId = "88300000228401";
-    private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private static String deviceId = Util.DEVICE_ID;
+    private static String transactionKey = Util.TRANSACTION_KEY;
 
     @Before
-    public void setUp() throws Exception{
-        delay.await(6,TimeUnit.SECONDS);
-        while (delay.getCount()>0){
+    public void setUp() throws Exception {
+        delay.await(6, TimeUnit.SECONDS);
+        while (delay.getCount() > 0) {
             delay.countDown();
         }
     }
+
     @Test
-    public void testThatAuthServicePasses () throws Exception {
+    public void testThatAuthServicePasses() throws Exception {
         authResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 authResponse = (AuthService.AuthResponse) response;
@@ -62,10 +63,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -73,7 +74,7 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -84,17 +85,17 @@ public class AuthInstrumentedTest {
 
     @Test
     public void testThatWrongExpirationDateFails() throws Exception {
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
-        String transactionAmount="0.10";
-        String cardNumber = "5415920054179210";
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
+        String transactionAmount = "0.10";
+        String cardNumber = Util.CARD_NUMBER;
         //Wrong expirationDate
         String expirationDate = "xxxx";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
 
@@ -103,10 +104,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -114,10 +115,10 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
         assertTrue(authResponse.getResponseCode().contentEquals("F9901"));
@@ -125,18 +126,18 @@ public class AuthInstrumentedTest {
     }
 
     @Test
-    public void testThatWrongCardNumberFails() throws Exception{
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
-        String transactionAmount="0.10";
+    public void testThatWrongCardNumberFails() throws Exception {
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
+        String transactionAmount = "0.10";
         //Invalid cardNumber
-        String cardNumber = "5415920054179210xx";
+        String cardNumber = Util.CARD_NUMBER+"xx";
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
 
@@ -145,10 +146,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -156,10 +157,10 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
         assertTrue(authResponse.getResponseCode().contentEquals("E7260"));
@@ -167,30 +168,30 @@ public class AuthInstrumentedTest {
     }
 
     @Test
-    public void testThatNullCardNumberFails() throws Exception{
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
-        String transactionAmount="0.10";
+    public void testThatNullCardNumberFails() throws Exception {
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
+        String transactionAmount = "0.10";
         //Null cardNumber, empty cardNumber
         String cardNumber = "";
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                authResponse = (AuthService.AuthResponse) response;
                 countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -198,40 +199,40 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
-        assertTrue(authResponse==null);
+        assertTrue(authResponse == null);
         assertTrue(errorResponse.getMsg().contains(" must not be empty or null"));
     }
 
     @Test
-    public void testThatNullExpirationDateFails() throws Exception{
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
-        String transactionAmount="0.10";
-        String cardNumber = "5415920054179210";
+    public void testThatNullExpirationDateFails() throws Exception {
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
+        String transactionAmount = "0.10";
+        String cardNumber = Util.CARD_NUMBER;
         //null expirationDate, empty expirationDate
         String expirationDate = "";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                authResponse = (AuthService.AuthResponse) response;
                 countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -239,29 +240,29 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
-        assertTrue(authResponse==null);
+        assertTrue(authResponse == null);
         assertTrue(errorResponse.getMsg().contains("must not be empty or null"));
     }
 
 
     @Test
-    public void testThatTransactionAmountIsZero() throws Exception{
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
+    public void testThatTransactionAmountIsZero() throws Exception {
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
         //transactionAmount equals to 0.00
-        String transactionAmount="0.00";
-        String cardNumber = "5415920054179210";
+        String transactionAmount = "0.00";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
 
@@ -270,10 +271,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -281,10 +282,10 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
         assertTrue(authResponse.getResponseCode().contentEquals("D2999"));
@@ -292,18 +293,18 @@ public class AuthInstrumentedTest {
     }
 
     @Test
-    public void testTransactionAmountNegativeFails() throws Exception{
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
+    public void testTransactionAmountNegativeFails() throws Exception {
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
         //invalid transactionAmount
-        String transactionAmount="-0.10";
-        String cardNumber = "5415920054179210";
+        String transactionAmount = "-0.10";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
 
@@ -312,10 +313,10 @@ public class AuthInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -323,10 +324,10 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.FAIL));
         assertTrue(authResponse.getResponseCode().contentEquals("F9901"));
@@ -334,30 +335,30 @@ public class AuthInstrumentedTest {
     }
 
     @Test
-    public void testThatTransactionAmountIsTheSameInResponse() throws Exception{
-        authResponse= null;
-        errorResponse=null;
-        String cardDataSource= CardDataSources.MANUAL;
+    public void testThatTransactionAmountIsTheSameInResponse() throws Exception {
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
         //invalid transactionAmount
-        String transactionAmount="0.10";
-        String cardNumber = "5415920054179210";
+        String transactionAmount = "0.10";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                authResponse = (AuthService.AuthResponse) response;
                 countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -365,10 +366,10 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
         assertTrue(authResponse.getStatus().contentEquals(AuthService.AuthResponse.PASS));
         assertTrue(authResponse.getTransactionAmount().equals(transactionAmount));
@@ -377,29 +378,29 @@ public class AuthInstrumentedTest {
     @Test
     public void testThatEmptyTransactionAmountFails() throws Exception {
 
-        authResponse=null;
-        errorResponse=null;
-        String cardDataSource=CardDataSources.MANUAL;
+        authResponse = null;
+        errorResponse = null;
+        String cardDataSource = CardDataSources.MANUAL;
         //empty transactionAmount
-        String transactionAmount="";
-        String cardNumber = "5415920054179210";
+        String transactionAmount = "";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
-        final CountDownLatch countDownLatch= new CountDownLatch(1);
-        new AuthService(auth, new TransitServiceCallback() {
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        TsysApiLibrary.doAuthorization(auth, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
-                authResponse=(AuthService.AuthResponse) response;
+                authResponse = (AuthService.AuthResponse) response;
                 countDownLatch.countDown();
             }
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof AuthService.AuthResponse)
-                    authResponse=(AuthService.AuthResponse) response;
+                if (response instanceof AuthService.AuthResponse)
+                    authResponse = (AuthService.AuthResponse) response;
                 else if (response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse)response;
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -407,16 +408,12 @@ public class AuthInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
-        while (countDownLatch.getCount()>0){
-            countDownLatch.await(1,TimeUnit.SECONDS);
+        while (countDownLatch.getCount() > 0) {
+            countDownLatch.await(1, TimeUnit.SECONDS);
         }
-        assertTrue(authResponse==null);
+        assertTrue(authResponse == null);
         assertTrue(errorResponse.getMsg().contains("must not"));
     }
-
-
-
-
 }

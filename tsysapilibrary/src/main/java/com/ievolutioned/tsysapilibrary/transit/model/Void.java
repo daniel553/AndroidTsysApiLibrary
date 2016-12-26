@@ -13,8 +13,8 @@ import org.json.JSONObject;
  * <p>
  * Example JSON:
  * {"Void": {
- * "deviceID": "88300000228401",
- * "transactionKey": "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0",
+ * "deviceID": "xxxxxxxxxxx",
+ * "transactionKey": "xxxxxxxxxxxxxxxxxxxxxxxxxxx",
  * "transactionID": "123213123123"
  * }}
  * </p>
