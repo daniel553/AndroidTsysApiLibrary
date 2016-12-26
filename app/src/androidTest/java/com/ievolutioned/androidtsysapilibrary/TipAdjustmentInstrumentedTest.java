@@ -32,8 +32,8 @@ public class TipAdjustmentInstrumentedTest {
     private CountDownLatch delay = new CountDownLatch(1);
     private SaleService.SaleResponse saleResponse = null;
     private ErrorResponse errorResponse = null;
-    private String deviceId = "88300000228401";
-    private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private String deviceId = Util.DEVICE_ID;
+    private String transactionKey = Util.TRANSACTION_KEY;
     private String message;
 
     @Before
@@ -46,7 +46,7 @@ public class TipAdjustmentInstrumentedTest {
         errorResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);

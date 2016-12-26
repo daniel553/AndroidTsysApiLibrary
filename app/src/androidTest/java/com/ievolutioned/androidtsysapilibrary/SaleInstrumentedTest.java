@@ -29,8 +29,8 @@ public class SaleInstrumentedTest {
     private CountDownLatch delay = new CountDownLatch(1);
     private SaleService.SaleResponse saleResponse = null;
     private ErrorResponse errorResponse = null;
-    private String deviceId = "88300000228401";
-    private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private String deviceId = Util.DEVICE_ID;
+    private String transactionKey = Util.TRANSACTION_KEY;
     private String cardDataSource = CardDataSources.MANUAL;
 
     @Before
@@ -47,7 +47,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         errorResponse = null;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -88,7 +88,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         errorResponse = null;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         //This is a wrong in expiration date.
         String expirationDate = "xxxx";
 
@@ -131,7 +131,7 @@ public class SaleInstrumentedTest {
         saleResponse = null;
         errorResponse = null;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         //This is an invalid expiration date.
         String expirationDate = null;
 
@@ -174,7 +174,7 @@ public class SaleInstrumentedTest {
         errorResponse = null;
         //TransactionAmount equals 0.00
         String transactionAmount = "0.00";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -217,7 +217,7 @@ public class SaleInstrumentedTest {
         errorResponse = null;
         //TransactionAmount is negative
         String transactionAmount = "-0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -261,7 +261,7 @@ public class SaleInstrumentedTest {
         errorResponse = null;
         String transactionAmount = "0.10";
         //Invalid cardNumber
-        String cardNumber = "5415920054179210xx";
+        String cardNumber = Util.CARD_NUMBER + "xx";
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -346,7 +346,7 @@ public class SaleInstrumentedTest {
         errorResponse = null;
         //Null transactionAmount, empty or filled with black spaces
         String transactionAmount = "    ";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);

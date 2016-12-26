@@ -27,8 +27,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(AndroidJUnit4.class)
 public class VoidInstrumentedTest {
     private CountDownLatch delay = new CountDownLatch(1);
-    private final String deviceId = "88300000228401";
-    private final String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private final String deviceId = Util.DEVICE_ID;
+    private final String transactionKey = Util.TRANSACTION_KEY;
     private ErrorResponse errorResponse = null;
     private SaleService.SaleResponse saleResponse = null;
     private VoidService.VoidResponse voidResponse = null;
@@ -42,7 +42,7 @@ public class VoidInstrumentedTest {
         saleResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);

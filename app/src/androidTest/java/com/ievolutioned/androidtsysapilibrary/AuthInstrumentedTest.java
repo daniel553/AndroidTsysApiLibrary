@@ -31,8 +31,8 @@ public class AuthInstrumentedTest {
     private ErrorResponse errorResponse = null;
     private CountDownLatch delay = new CountDownLatch(1);
 
-    private String deviceId = "88300000228401";
-    private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
+    private static String deviceId = Util.DEVICE_ID;
+    private static String transactionKey = Util.TRANSACTION_KEY;
 
     @Before
     public void setUp() throws Exception {
@@ -48,7 +48,7 @@ public class AuthInstrumentedTest {
         errorResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -89,7 +89,7 @@ public class AuthInstrumentedTest {
         errorResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         //Wrong expirationDate
         String expirationDate = "xxxx";
 
@@ -132,7 +132,7 @@ public class AuthInstrumentedTest {
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
         //Invalid cardNumber
-        String cardNumber = "5415920054179210xx";
+        String cardNumber = Util.CARD_NUMBER+"xx";
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -214,7 +214,7 @@ public class AuthInstrumentedTest {
         errorResponse = null;
         String cardDataSource = CardDataSources.MANUAL;
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         //null expirationDate, empty expirationDate
         String expirationDate = "";
 
@@ -257,7 +257,7 @@ public class AuthInstrumentedTest {
         String cardDataSource = CardDataSources.MANUAL;
         //transactionAmount equals to 0.00
         String transactionAmount = "0.00";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -299,7 +299,7 @@ public class AuthInstrumentedTest {
         String cardDataSource = CardDataSources.MANUAL;
         //invalid transactionAmount
         String transactionAmount = "-0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -341,7 +341,7 @@ public class AuthInstrumentedTest {
         String cardDataSource = CardDataSources.MANUAL;
         //invalid transactionAmount
         String transactionAmount = "0.10";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
@@ -383,7 +383,7 @@ public class AuthInstrumentedTest {
         String cardDataSource = CardDataSources.MANUAL;
         //empty transactionAmount
         String transactionAmount = "";
-        String cardNumber = "5415920054179210";
+        String cardNumber = Util.CARD_NUMBER;
         String expirationDate = "0819";
 
         Auth auth = new Auth(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
