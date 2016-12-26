@@ -1,8 +1,6 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.v4.database.DatabaseUtilsCompat;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
@@ -10,7 +8,6 @@ import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
-import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.model.Sale;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 import com.ievolutioned.tsysapilibrary.util.LogUtil;
@@ -26,20 +23,37 @@ import org.json.JSONObject;
  */
 public class SaleService extends TransitServiceBase {
     private String TAG = SaleService.class.getName();
-
+    private Sale sale = null;
     public String URL = BASE_URL + "Sale";
 
     /**
-     * {@link SaleService} service task builder.
-     * <p>
-     * It doesn't execute the code, use @see TransitBase#execute()
-     * </p>
+     * Sale service instance
      *
-     * @param sale     - {@link Sale} object.
-     * @param callback - {@link TransitServiceCallback} callback.
+     * @return an instance
      */
-    public SaleService(@NonNull final Sale sale, @NonNull final TransitServiceCallback callback) {
+    public static SaleService getInstance() {
+        synchronized (SaleService.class) {
+            if (instance == null || !(instance instanceof SaleService))
+                instance = new SaleService();
+            return (SaleService) instance;
+        }
+    }
+
+    private SaleService() {
+    }
+
+    @Override
+    protected void buildTask() {
         task = new AsyncTask<Void, Void, BaseResponse>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (callback == null)
+                    throw new NullPointerException("callback must not be null");
+                if (sale == null)
+                    throw new NullPointerException("sale must not be null");
+            }
+
             @Override
             protected BaseResponse doInBackground(Void... voids) {
                 if (!isCancelled())
@@ -87,6 +101,7 @@ public class SaleService extends TransitServiceBase {
     /**
      * Validates that the required attributes for a service are not null, empty of blanck
      * spcaced, if one of the above throws an IllegalArgumentException
+     *
      * @param sale - {@link Sale} object that will be used for calling the TransIT service.
      * @throws IllegalArgumentException
      */
@@ -100,6 +115,10 @@ public class SaleService extends TransitServiceBase {
             fields = new String[]{/* add SWIPE requiered fields to validate */};
             sale.validateEmptyNullFields(fields);
         }
+    }
+
+    public void setSale(Sale sale) {
+        this.sale = sale;
     }
 
 

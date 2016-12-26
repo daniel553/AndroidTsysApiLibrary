@@ -1,14 +1,12 @@
 package com.ievolutioned.tsysapilibrary.transit.cardservices;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 
 import com.ievolutioned.tsysapilibrary.net.NetUtil;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
 import com.ievolutioned.tsysapilibrary.transit.TransitBase;
 import com.ievolutioned.tsysapilibrary.transit.TransitServiceBase;
-import com.ievolutioned.tsysapilibrary.transit.TransitServiceCallback;
 import com.ievolutioned.tsysapilibrary.transit.model.TipAdjustment;
 import com.ievolutioned.tsysapilibrary.util.JsonUtil;
 import com.ievolutioned.tsysapilibrary.util.LogUtil;
@@ -28,20 +26,38 @@ public class TipAdjustmentService extends TransitServiceBase {
 
     private String TAG = SaleService.class.getName();
 
+    private TipAdjustment tipAdjustment = null;
+
     public String URL = BASE_URL + "TipAdjustment";
 
     /**
-     * {@link TipAdjustmentService} service task builder.
-     * <p>
-     * It doesn't execute the code, use @see TransitBase#execute()
-     * </p>
+     * {@link TipAdjustmentService} instance
      *
-     * @param tipAdjustment - {@link TipAdjustment} object.
-     * @param callback      - {@link TransitServiceCallback} callback.
+     * @return an instance
      */
-    public TipAdjustmentService(@NonNull final TipAdjustment tipAdjustment,
-                                @NonNull final TransitServiceCallback callback) {
+    public static TipAdjustmentService getInstance() {
+        synchronized (TipAdjustmentService.class) {
+            if (instance == null || !(instance instanceof TipAdjustmentService))
+                instance = new TipAdjustmentService();
+            return (TipAdjustmentService) instance;
+        }
+    }
+
+    private TipAdjustmentService() {
+    }
+
+    @Override
+    protected void buildTask() {
         task = new AsyncTask<Void, Void, BaseResponse>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                if (callback == null)
+                    throw new NullPointerException("callback must not be null");
+                if (tipAdjustment == null)
+                    throw new NullPointerException("tipAdjustment must not be null");
+            }
+
             @Override
             protected BaseResponse doInBackground(Void... voids) {
                 if (!isCancelled())
@@ -87,6 +103,10 @@ public class TipAdjustmentService extends TransitServiceBase {
             LogUtil.e(TAG, e.getMessage(), e);
             return null;
         }
+    }
+
+    public void setTipAdjustment(TipAdjustment tipAdjustment) {
+        this.tipAdjustment = tipAdjustment;
     }
 
 

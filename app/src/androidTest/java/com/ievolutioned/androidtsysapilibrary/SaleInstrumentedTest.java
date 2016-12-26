@@ -2,6 +2,7 @@ package com.ievolutioned.androidtsysapilibrary;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.ievolutioned.tsysapilibrary.TsysApiLibrary;
 import com.ievolutioned.tsysapilibrary.transit.BaseResponse;
 import com.ievolutioned.tsysapilibrary.transit.CardDataSources;
 import com.ievolutioned.tsysapilibrary.transit.ErrorResponse;
@@ -25,17 +26,17 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(AndroidJUnit4.class)
 public class SaleInstrumentedTest {
-    private CountDownLatch delay= new CountDownLatch(1);
+    private CountDownLatch delay = new CountDownLatch(1);
     private SaleService.SaleResponse saleResponse = null;
-    private ErrorResponse errorResponse=null;
+    private ErrorResponse errorResponse = null;
     private String deviceId = "88300000228401";
     private String transactionKey = "1SN6NMT7MI3XQ8SSJSL592DAHNVGCQC0";
     private String cardDataSource = CardDataSources.MANUAL;
 
     @Before
-    public void setUp() throws Exception{
-        delay.await(6,TimeUnit.SECONDS);
-        while (delay.getCount()>0){
+    public void setUp() throws Exception {
+        delay.await(6, TimeUnit.SECONDS);
+        while (delay.getCount() > 0) {
             delay.countDown();
         }
     }
@@ -44,7 +45,7 @@ public class SaleInstrumentedTest {
     public void testSaleServiceSuccess() throws Exception {
 
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         String expirationDate = "0819";
@@ -52,7 +53,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -61,10 +62,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -72,7 +73,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -83,9 +84,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testErrorExpirationDate() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         //This is a wrong in expiration date.
@@ -94,7 +95,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -103,10 +104,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -114,7 +115,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -126,9 +127,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testExpirationDateNullFails() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String transactionAmount = "0.10";
         String cardNumber = "5415920054179210";
         //This is an invalid expiration date.
@@ -137,7 +138,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -146,10 +147,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -157,7 +158,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -168,9 +169,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testTransactionAmountEqualsZeroFails() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         //TransactionAmount equals 0.00
         String transactionAmount = "0.00";
         String cardNumber = "5415920054179210";
@@ -179,7 +180,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -189,10 +190,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -200,7 +201,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -211,9 +212,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testTransactionAmountNegativeFails() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         //TransactionAmount is negative
         String transactionAmount = "-0.10";
         String cardNumber = "5415920054179210";
@@ -222,7 +223,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -232,10 +233,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
 
             }
@@ -244,7 +245,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -255,9 +256,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testThatInvalidCardNumberFails() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String transactionAmount = "0.10";
         //Invalid cardNumber
         String cardNumber = "5415920054179210xx";
@@ -266,7 +267,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -276,10 +277,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -287,7 +288,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -298,9 +299,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testThatNullCardNumberFails() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         String transactionAmount = "0.10";
         //Null cardNumber, empty cardNumber or filled with blanck spaces
         String cardNumber = "";
@@ -309,7 +310,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -318,10 +319,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -329,7 +330,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
@@ -340,9 +341,9 @@ public class SaleInstrumentedTest {
 
     @Test
     public void testThatNullTransactionAmountFails() throws Exception {
-        delay.await(6,TimeUnit.SECONDS);
+        delay.await(6, TimeUnit.SECONDS);
         saleResponse = null;
-        errorResponse=null;
+        errorResponse = null;
         //Null transactionAmount, empty or filled with black spaces
         String transactionAmount = "    ";
         String cardNumber = "5415920054179210";
@@ -351,7 +352,7 @@ public class SaleInstrumentedTest {
         Sale sale = new Sale(deviceId, transactionKey, cardDataSource, transactionAmount, cardNumber, expirationDate);
 
         final CountDownLatch countDownLatch = new CountDownLatch(1);
-        new SaleService(sale, new TransitServiceCallback() {
+        TsysApiLibrary.doSale(sale, new TransitServiceCallback() {
             @Override
             public void onSuccess(String msg, BaseResponse response) {
                 saleResponse = (SaleService.SaleResponse) response;
@@ -360,10 +361,10 @@ public class SaleInstrumentedTest {
 
             @Override
             public void onError(String msg, BaseResponse response) {
-                if(response instanceof SaleService.SaleResponse)
-                    saleResponse=(SaleService.SaleResponse) response;
-                else if(response instanceof ErrorResponse)
-                    errorResponse=(ErrorResponse) response;
+                if (response instanceof SaleService.SaleResponse)
+                    saleResponse = (SaleService.SaleResponse) response;
+                else if (response instanceof ErrorResponse)
+                    errorResponse = (ErrorResponse) response;
                 countDownLatch.countDown();
             }
 
@@ -371,7 +372,7 @@ public class SaleInstrumentedTest {
             public void onCancel() {
                 countDownLatch.countDown();
             }
-        }).execute();
+        });
 
         while (countDownLatch.getCount() > 0) {
             countDownLatch.await(1, TimeUnit.SECONDS);
