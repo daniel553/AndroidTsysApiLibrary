@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">AndroidTsysApiLibrary</string>
+    <string name="main_activity_authorization">Authorization</string>
+
+    <string name="authorization_activity_device_id">Device id</string>
+    <string name="authorization_activity_transaction_key">Transaction key</string>
+    <string name="authorization_activity_card_data_source">Card data source</string>
+    <string name="authorization_activity_card_data_source_default">MANUAL</string>
+    <string name="authorization_activity_transaction_amount">Transaction amount</string>
+    <string name="authorization_activity_card_number">Card number</string>
+    <string name="authorization_activity_expiration_date">Expiration date</string>
+    <string name="authorization_activity_send_button">Call service</string>
+    <string name="authorization_activity_response_text">Response</string>
+
 </resources>
